@@ -614,15 +614,19 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\realmd\AuthSocket.cpp"
+			RelativePath="..\..\src\realmd\AuthSession.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\realmd\AuthSocket.h"
+			RelativePath="..\..\src\realmd\AuthSession.h"
 			>
 		</File>
 		<File
 			RelativePath="..\..\src\realmd\Main.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\realmd\RealmAcceptor.h"
 			>
 		</File>
 		<File
@@ -635,6 +639,14 @@
 		</File>
 		<File
 			RelativePath="..\..\src\realmd\RealmList.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\realmd\RealmSocket.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\realmd\RealmSocket.h"
 			>
 		</File>
 		<File

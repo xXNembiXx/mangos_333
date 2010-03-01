@@ -636,8 +636,8 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
         movementInfo.Write(data);                               // write data
         mover->SendMessageToSetExcept(&data, _player);
 
-        plMover->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
         plMover->m_movementInfo = movementInfo;
+        plMover->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
         // after move info set

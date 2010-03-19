@@ -1,4 +1,4 @@
-/* Copyright (C) 2000 MySQL AB
+/* Copyright (C) 2004 MySQL AB
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -11,21 +11,13 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA */
 
-/* Defines that are unique to the embedded version of MySQL */
+#ifndef MGMAPI_CONFIG_PARAMTERS_DEBUG_H
+#define MGMAPI_CONFIG_PARAMTERS_DEBUG_H
 
-#ifdef EMBEDDED_LIBRARY
+#include "mgmapi_config_parameters.h"
 
-/* Things we don't need in the embedded version of MySQL */
-/* TODO HF add #undef HAVE_VIO if we don't want client in embedded library */
+#define CFG_DB_STOP_ON_ERROR_INSERT   1
 
-#undef HAVE_PSTACK				/* No stacktrace */
-#undef HAVE_DLOPEN				/* No udf functions */
-#undef HAVE_OPENSSL
-#undef HAVE_SMEM				/* No shared memory */
-#undef HAVE_NDBCLUSTER_DB /* No NDB cluster */
-
-#define DONT_USE_RAID
-
-#endif /* EMBEDDED_LIBRARY */
+#endif

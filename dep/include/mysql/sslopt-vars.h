@@ -13,24 +13,19 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
-
-#ifndef _typelib_h
-#define _typelib_h
-
-#include "my_alloc.h"
-
-typedef struct st_typelib {	/* Different types saved here */
-  unsigned int count;		/* How many types */
-  const char *name;		/* Name of typelib */
-  const char **type_names;
-  unsigned int *type_lengths;
-} TYPELIB;
-
-extern int find_type(char *x,TYPELIB *typelib,unsigned int full_name);
-extern void make_type(char *to,unsigned int nr,TYPELIB *typelib);
-extern const char *get_type(TYPELIB *typelib,unsigned int nr);
-extern TYPELIB *copy_typelib(MEM_ROOT *root, TYPELIB *from);
-
-extern TYPELIB sql_protocol_typelib;
-
-#endif /* _typelib_h */
+#ifdef HAVE_OPENSSL
+#ifdef SSL_VARS_NOT_STATIC
+#define SSL_STATIC
+#else
+#define SSL_STATIC static
+#endif
+SSL_STATIC my_bool opt_use_ssl  = 0;
+SSL_STATIC char *opt_ssl_ca     = 0;
+SSL_STATIC char *opt_ssl_capath = 0;
+SSL_STATIC char *opt_ssl_cert   = 0;
+SSL_STATIC char *opt_ssl_cipher = 0;
+SSL_STATIC char *opt_ssl_key    = 0;
+#ifdef MYSQL_CLIENT
+SSL_STATIC my_bool opt_ssl_verify_server_cert= 0;
+#endif
+#endif

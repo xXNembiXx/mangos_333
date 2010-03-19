@@ -162,6 +162,7 @@ extern char *my_strdup_with_length(const char *from, size_t length,
 #define ORIG_CALLER_INFO    /* nothing */
 #define TRASH(A,B) /* nothing */
 #endif
+#define my_strndup(A,B,C)  my_strdup_with_length((A), (B), (C))
 
 #ifdef HAVE_LARGE_PAGES
 extern uint my_get_large_page_size(void);
@@ -250,7 +251,7 @@ extern int NEAR my_umask,		/* Default creation mask  */
 	   NEAR my_safe_to_handle_signal, /* Set when allowed to SIGTSTP */
 	   NEAR my_dont_interrupt;	/* call remember_intr when set */
 extern my_bool NEAR mysys_uses_curses, my_use_symdir;
-extern ulong sf_malloc_cur_memory, sf_malloc_max_memory;
+extern size_t sf_malloc_cur_memory, sf_malloc_max_memory;
 
 extern ulong	my_default_record_cache_size;
 extern my_bool NEAR my_disable_locking,NEAR my_disable_async_io,
@@ -574,6 +575,7 @@ extern int my_close(File Filedes,myf MyFlags);
 extern File my_dup(File file, myf MyFlags);
 extern int my_mkdir(const char *dir, int Flags, myf MyFlags);
 extern int my_readlink(char *to, const char *filename, myf MyFlags);
+extern int my_is_symlink(const char *filename);
 extern int my_realpath(char *to, const char *filename, myf MyFlags);
 extern File my_create_with_symlink(const char *linkname, const char *filename,
 				   int createflags, int access_flags,
@@ -635,6 +637,7 @@ extern int nt_share_delete(const char *name,myf MyFlags);
 extern void TERMINATE(FILE *file);
 #endif
 extern void init_glob_errs(void);
+extern void wait_for_free_space(const char *filename, int errors);
 extern FILE *my_fopen(const char *FileName,int Flags,myf MyFlags);
 extern FILE *my_fdopen(File Filedes,const char *name, int Flags,myf MyFlags);
 extern int my_fclose(FILE *fd,myf MyFlags);
@@ -681,6 +684,7 @@ extern my_string fn_format(my_string to,const char *name,const char *dir,
 			   const char *form, uint flag);
 extern size_s strlength(const char *str);
 extern void pack_dirname(my_string to,const char *from);
+extern uint normalize_dirname(char * to, const char *from);
 extern uint unpack_dirname(my_string to,const char *from);
 extern uint cleanup_dirname(my_string to,const char *from);
 extern uint system_filename(my_string to,const char *from);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2000 MySQL AB
+/* Copyright (C) 2003 MySQL AB
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,23 +14,18 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 
-#ifndef _typelib_h
-#define _typelib_h
+#ifndef NDB_INIT_H
+#define NDB_INIT_H
 
-#include "my_alloc.h"
+#ifdef  __cplusplus
+extern "C" {
+#endif
+/* call in main() - does not return on error */
+extern int ndb_init(void);
+extern void ndb_end(int);
+#define NDB_INIT(prog_name) {my_progname=(prog_name); ndb_init();}
+#ifdef  __cplusplus
+}
+#endif
 
-typedef struct st_typelib {	/* Different types saved here */
-  unsigned int count;		/* How many types */
-  const char *name;		/* Name of typelib */
-  const char **type_names;
-  unsigned int *type_lengths;
-} TYPELIB;
-
-extern int find_type(char *x,TYPELIB *typelib,unsigned int full_name);
-extern void make_type(char *to,unsigned int nr,TYPELIB *typelib);
-extern const char *get_type(TYPELIB *typelib,unsigned int nr);
-extern TYPELIB *copy_typelib(MEM_ROOT *root, TYPELIB *from);
-
-extern TYPELIB sql_protocol_typelib;
-
-#endif /* _typelib_h */
+#endif

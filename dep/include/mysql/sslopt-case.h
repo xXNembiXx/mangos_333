@@ -13,24 +13,16 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
-
-#ifndef _typelib_h
-#define _typelib_h
-
-#include "my_alloc.h"
-
-typedef struct st_typelib {	/* Different types saved here */
-  unsigned int count;		/* How many types */
-  const char *name;		/* Name of typelib */
-  const char **type_names;
-  unsigned int *type_lengths;
-} TYPELIB;
-
-extern int find_type(char *x,TYPELIB *typelib,unsigned int full_name);
-extern void make_type(char *to,unsigned int nr,TYPELIB *typelib);
-extern const char *get_type(TYPELIB *typelib,unsigned int nr);
-extern TYPELIB *copy_typelib(MEM_ROOT *root, TYPELIB *from);
-
-extern TYPELIB sql_protocol_typelib;
-
-#endif /* _typelib_h */
+#ifdef HAVE_OPENSSL
+    case OPT_SSL_KEY:
+    case OPT_SSL_CERT:
+    case OPT_SSL_CA:
+    case OPT_SSL_CAPATH:
+    case OPT_SSL_CIPHER:
+    /*
+      Enable use of SSL if we are using any ssl option
+      One can disable SSL later by using --skip-ssl or --ssl=0
+    */
+      opt_use_ssl= 1;
+      break;
+#endif

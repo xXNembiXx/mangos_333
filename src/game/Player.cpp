@@ -19101,11 +19101,14 @@ WorldObject const* Player::GetViewPoint() const
 {
     if(uint64 far_sight = GetFarSight())
     {
-        WorldObject const* viewPoint = GetMap()->GetWorldObject(far_sight);
-        return viewPoint ? viewPoint : this;                // always expected not NULL
+        if (GetMapSafe())
+        {
+            WorldObject const* viewPoint = GetMap()->GetWorldObject(far_sight);
+            return viewPoint ? viewPoint : this;                // always expected not NULL
+        }
     }
-    else
-        return this;
+
+    return this;
 }
 
 bool Player::IsVisibleInGridForPlayer( Player* pl ) const

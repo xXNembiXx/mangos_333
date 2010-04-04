@@ -4957,15 +4957,19 @@ void Aura::HandleAuraPeriodicDummy(bool apply, bool Real)
     {
         case SPELLFAMILY_ROGUE:
         {
-            if(!apply)
+            switch(spell->Id)
             {
-                switch(spell->Id)
-                {
-                    // Master of Subtlety
-                    case 31666: m_target->RemoveAurasDueToSpell(31665); break;
-                    // Overkill
-                    case 58428: m_target->RemoveAurasDueToSpell(58427); break;
-                }
+                // Master of Subtlety
+                case 31666: if(!apply) m_target->RemoveAurasDueToSpell(31665); break;
+                // Overkill
+                case 58428:	if(!apply) m_target->RemoveAurasDueToSpell(58427); break;
+                // Killing Spree
+                case 51690:
+                    if(apply)
+                        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    else
+                        m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    break;
             }
             break;
         }
@@ -8734,7 +8738,8 @@ void Aura::HandleAllowOnlyAbility(bool apply, bool Real)
     if(!Real)
        return;
 
-    if(apply)
+    // aura should affect only abilities
+    /*if(apply)
     {
        m_target->setAttackTimer(BASE_ATTACK,m_duration);
        m_target->setAttackTimer(RANGED_ATTACK,m_duration);
@@ -8744,7 +8749,7 @@ void Aura::HandleAllowOnlyAbility(bool apply, bool Real)
     {
        m_target->resetAttackTimer(BASE_ATTACK);
        m_target->resetAttackTimer(RANGED_ATTACK);
-       m_target->resetAttackTimer(OFF_ATTACK);
+       m_target->resetAttackTimer(OFF_ATTACK);*/
     }
 
     m_target->UpdateDamagePhysical(BASE_ATTACK);

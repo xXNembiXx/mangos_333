@@ -34,7 +34,7 @@ class DBCStorage
         char const* GetFormat() const { return fmt; }
         uint32 GetFieldCount() const { return fieldCount; }
 
-        bool Load(char const* fn)
+        bool Load(char const* fn, SQLStorage* sqlStorage = NULL)
         {
             DBCFileLoader dbc;
             // Check if load was sucessful, only then continue
@@ -42,8 +42,26 @@ class DBCStorage
                 return false;
 
             fieldCount = dbc.GetCols();
-            m_dataTable = (T*)dbc.AutoProduceData(fmt,nCount,(char**&)indexTable);
+            uint32 sqlRecordCount = 0;
+            uint32 sqlMaxEntry = 0;
+            if(sqlStorage)
+            {
+                sqlStorage->Load(true);
+                sqlRecordCount = sqlStorage->RecordCount;
+                sqlMaxEntry = sqlStorage->MaxEntry - 1;
+            }
+
+            m_dataTable = (T*)dbc.AutoProduceData(fmt,nCount,(char**&)indexTable,sqlRecordCount,sqlMaxEntry);
             m_stringPoolList.push_back(dbc.AutoProduceStrings(fmt,(char*)m_dataTable));
+
+            for (int i = sqlMaxEntry, j = 0; i > 0, j != sqlRecordCount; --i)
+            {
+                if (LookupEntry(i) || !sqlStorage->LookupEntry<T>(i))
+                    continue;
+
+                indexTable[i] = const_cast<T*>(sqlStorage->LookupEntry<T>(i));
+                ++j;
+            }
 
             // error in dbc file at loading if NULL
             return indexTable!=NULL;

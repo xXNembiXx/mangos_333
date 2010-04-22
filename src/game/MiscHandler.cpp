@@ -244,15 +244,15 @@ void WorldSession::HandleWhoOpcode( WorldPacket & recv_data )
         data << uint8(0);                                   // new 2.4.0
         data << uint32( pzoneid );                          // player zone id
 
-        // 50 is maximum player count sent to client
-        if ((++clientcount) == 50)
+        // 49 is maximum player count sent to client
+        if ((++clientcount) == 49)
             break;
     }
 
     uint32 count = m.size();
     data.put( 0, clientcount );                             // insert right count, listed count
-    data.put( 4, count > 50 ? count : clientcount );        // insert right count, online count
-
+    //data.put( 4, count > 50 ? count : clientcount );        // insert right count, online count
+	data.put( 4, clientcount );                             // insert right count, online count
     SendPacket(&data);
     sLog.outDebug( "WORLD: Send SMSG_WHO Message" );
 }

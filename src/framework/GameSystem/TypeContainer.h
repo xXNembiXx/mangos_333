@@ -89,7 +89,7 @@ class TypeUnorderedMapContainer
             }
             else
             {
-                ASSERT(i->second == obj && "Object with certain key already in but objects are different!");
+                //ASSERT(i->second == obj && "Object with certain key already in but objects are different!");
                 return false;
             }
         }

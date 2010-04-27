@@ -857,12 +857,9 @@ void AuthSession::LoadRealmlist(ByteBuffer &pkt, uint32 acctid)
             {
                 uint8 AmountOfCharacters;
 
-
-
                 // No SQL injection. id of realm is controlled by the database.
                 QueryResult *result = loginDatabase.PQuery( "SELECT numchars FROM realmcharacters WHERE realmid = '%d' AND acctid='%u'", i->second.m_ID, acctid);
                 if( result )
-
                 {
                     Field *fields = result->Fetch();
                     AmountOfCharacters = fields[0].GetUInt8();
@@ -870,7 +867,6 @@ void AuthSession::LoadRealmlist(ByteBuffer &pkt, uint32 acctid)
                 }
                 else
                     AmountOfCharacters = 0;
-
 
                 bool ok_build = std::find(i->second.realmbuilds.begin(), i->second.realmbuilds.end(), _build) != i->second.realmbuilds.end();
 
@@ -908,20 +904,6 @@ void AuthSession::LoadRealmlist(ByteBuffer &pkt, uint32 acctid)
             break;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         case 8606:                                          // 2.4.3
         case 10505:                                         // 3.2.2a
         case 11159:                                         // 3.3.0a
@@ -936,12 +918,9 @@ void AuthSession::LoadRealmlist(ByteBuffer &pkt, uint32 acctid)
             {
                 uint8 AmountOfCharacters;
 
-
-
                 // No SQL injection. id of realm is controlled by the database.
                 QueryResult *result = loginDatabase.PQuery( "SELECT numchars FROM realmcharacters WHERE realmid = '%d' AND acctid='%u'", i->second.m_ID, acctid);
                 if( result )
-
                 {
                     Field *fields = result->Fetch();
                     AmountOfCharacters = fields[0].GetUInt8();
@@ -949,7 +928,6 @@ void AuthSession::LoadRealmlist(ByteBuffer &pkt, uint32 acctid)
                 }
                 else
                     AmountOfCharacters = 0;
-
 
                 bool ok_build = std::find(i->second.realmbuilds.begin(), i->second.realmbuilds.end(), _build) != i->second.realmbuilds.end();
 

@@ -1586,7 +1586,7 @@ bool Group::InCombatToInstance(uint32 instanceId, bool bossOnly)
             if(!bossOnly)
                 return true;
 
-            for(AttackerSet::const_iterator itr = pPlayer->getAttackers().begin(); itr != pPlayer->getAttackers().end(); itr++)
+            for(std::set<Unit*>::const_iterator itr = pPlayer->getAttackers().begin(); itr != pPlayer->getAttackers().end(); itr++)
             {
                 if((*itr)->GetTypeId() != TYPEID_PLAYER && ((Creature*)(*itr))->isWorldBoss())
                     return true;

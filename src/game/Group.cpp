@@ -1576,22 +1576,13 @@ void Group::SetRaidDifficulty(Difficulty difficulty)
     }
 }
 
-bool Group::InCombatToInstance(uint32 instanceId, bool bossOnly)
+bool Group::InCombatToInstance(uint32 instanceId)
 {
     for(GroupReference *itr = GetFirstMember(); itr != NULL; itr = itr->next())
     {
         Player *pPlayer = itr->getSource();
-        if(!pPlayer->getAttackers().empty() && pPlayer->GetInstanceId() == instanceId)
-        {
-            if(!bossOnly)
-                return true;
-
-            for(std::set<Unit*>::const_iterator itr = pPlayer->getAttackers().begin(); itr != pPlayer->getAttackers().end(); itr++)
-            {
-                if((*itr)->GetTypeId() != TYPEID_PLAYER && ((Creature*)(*itr))->isWorldBoss())
-                    return true;
-            }
-        }
+        if(pPlayer->getAttackers().size() && pPlayer->GetInstanceId() == instanceId)
+            return true;
     }
     return false;
 }

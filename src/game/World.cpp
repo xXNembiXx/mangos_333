@@ -1389,10 +1389,7 @@ void World::Update(uint32 diff)
         ResetWeeklyQuests();
 
     if (m_gameTime > m_NextRandomBGReset)
-    {
         ResetRandomBG();
-        m_NextRandomBGReset += DAY;
-    }
 
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())

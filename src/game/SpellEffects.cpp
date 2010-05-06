@@ -2025,11 +2025,6 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                     m_caster->CastSpell(m_caster, 63848, true);
                     return;
                 }
-                case 51690:                                 // Killing Spree - second effect
-                {
-                    m_caster->CastSpell(m_caster, 61851, true);
-                    return;
-                }
             }
             break;
         }

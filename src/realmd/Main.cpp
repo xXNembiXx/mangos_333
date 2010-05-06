@@ -167,11 +167,11 @@ extern int main(int argc, char **argv)
         while (pause > clock()) {}
     }
 
-    sLog.outDetail("%s (Library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+    DETAIL_LOG("%s (Library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
     if (SSLeay() < 0x009080bfL )
     {
-        sLog.outDetail("WARNING: Outdated version of OpenSSL lib. Logins to server may not work!");
-        sLog.outDetail("WARNING: Minimal required version [OpenSSL 0.9.8k]");
+        DETAIL_LOG("WARNING: Outdated version of OpenSSL lib. Logins to server may not work!");
+        DETAIL_LOG("WARNING: Minimal required version [OpenSSL 0.9.8k]");
     }
 
 #if defined (ACE_HAS_EVENT_POLL) || defined (ACE_HAS_DEV_POLL)
@@ -287,7 +287,7 @@ extern int main(int argc, char **argv)
         if( (++loopCounter) == numLoops )
         {
             loopCounter = 0;
-            sLog.outDetail("Ping MySQL to keep connection alive");
+            DETAIL_LOG("Ping MySQL to keep connection alive");
             delete loginDatabase.Query("SELECT 1 FROM realmlist LIMIT 1");
         }
 #ifdef WIN32

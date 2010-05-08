@@ -297,7 +297,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleComprehendLanguage,                        //244 SPELL_AURA_COMPREHEND_LANGUAGE
     &Aura::HandleNoImmediateEffect,                         //245 SPELL_AURA_MOD_DURATION_OF_MAGIC_EFFECTS     implemented in Unit::CalculateSpellDuration
     &Aura::HandleNoImmediateEffect,                         //246 SPELL_AURA_MOD_DURATION_OF_EFFECTS_BY_DISPEL implemented in Unit::CalculateSpellDuration
-    &Aura::HandleNULL,                                      //247 target to become a clone of the caster
+    &Aura::HandleAuraCloneCaster,                           //247 SPELL_AURA_CLONE_CASTER
     &Aura::HandleNoImmediateEffect,                         //248 SPELL_AURA_MOD_COMBAT_RESULT_CHANCE         implemented in Unit::RollMeleeOutcomeAgainst
     &Aura::HandleAuraConvertRune,                           //249 SPELL_AURA_CONVERT_RUNE
     &Aura::HandleAuraModIncreaseHealth,                     //250 SPELL_AURA_MOD_INCREASE_HEALTH_2
@@ -329,7 +329,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleNULL,                                      //276 mod damage % mechanic?
     &Aura::HandleNoImmediateEffect,                         //277 SPELL_AURA_MOD_MAX_AFFECTED_TARGETS Use SpellClassMask for spell select
     &Aura::HandleNULL,                                      //278 SPELL_AURA_MOD_DISARM_RANGED disarm ranged weapon
-    &Aura::HandleNULL,                                      //279 visual effects? 58836 and 57507
+    &Aura::HandleAuraInitializeImages,                      //279 SPELL_AURA_INITIALIZE_IMAGES
     &Aura::HandleModTargetArmorPct,                         //280 SPELL_AURA_MOD_TARGET_ARMOR_PCT
     &Aura::HandleNoImmediateEffect,                         //281 SPELL_AURA_MOD_HONOR_GAIN             implemented in Player::RewardHonor
     &Aura::HandleAuraIncreaseBaseHealthPercent,             //282 SPELL_AURA_INCREASE_BASE_HEALTH_PERCENT
@@ -4470,6 +4470,9 @@ void Aura::HandleAuraModTotalThreat(bool apply, bool Real)
     // only at real add/remove aura
     if (!Real)
         return;
+		
+	if(GetId() == 55342)
+        return;
 
     if (!m_target->isAlive() || m_target->GetTypeId() != TYPEID_PLAYER)
         return;
@@ -8266,8 +8269,16 @@ void Aura::PeriodicDummyTick()
         case SPELLFAMILY_MAGE:
         {
             // Mirror Image
-//            if (spell->Id == 55342)
-//                return;
+            if (spell->Id == 55342)
+            {
+                if(m_target->GetTypeId() != TYPEID_PLAYER)
+                    break;
+                //Clear target
+                WorldPacket data(SMSG_CLEAR_TARGET, 8);
+                data << m_target->GetGUID();
+                ((Player*)m_target)->SendMessageToSetInRange(&data, 80.0f, false, false, true);
+                m_isPeriodic = false;
+            }
             break;
         }
         case SPELLFAMILY_DRUID:
@@ -8763,6 +8774,52 @@ void Aura::HandleAllowOnlyAbility(bool apply, bool Real)
     m_target->UpdateDamagePhysical(OFF_ATTACK);
 }
 
+void Aura::HandleAuraInitializeImages(bool Apply, bool Real)
+{
+    if (!Real || !Apply || !m_target || m_target->GetTypeId() != TYPEID_UNIT)
+        return;
+    Unit* caster = GetCaster();
+    Unit* creator = Unit::GetUnit(*m_target,m_target->GetCreatorGUID());
+    Creature* pImmage = (Creature*)m_target;
+    if (!creator || !caster || creator != caster || pImmage->isPet())
+        return;
+
+    // set stats and visual
+    pImmage->SetDisplayId(creator->GetDisplayId());
+//    pImmage->SetLevel(creator->getLevel());
+    pImmage->SetMaxHealth(creator->GetMaxHealth()/5);
+    pImmage->SetHealth(creator->GetHealth()/2);
+    pImmage->SetMaxPower(POWER_MANA, creator->GetMaxPower(POWER_MANA));
+    pImmage->SetPower(POWER_MANA, creator->GetPower(POWER_MANA));
+    pImmage->setFaction(creator->getFaction());
+    pImmage->SetUInt32Value(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_UNK2 | UNIT_FLAG2_REGENERATE_POWER);
+    if (creator->IsPvP())
+        pImmage->SetPvP(true);
+
+    if (creator->isInCombat() && pImmage->isAlive())
+        pImmage->CastSpell(pImmage, 58838, true);
+    else
+    {
+       pImmage->GetMotionMaster()->Clear();
+       pImmage->GetMotionMaster()->MoveFollow(creator, pImmage->GetDistance(creator), pImmage->GetAngle(creator));
+    }
+}
+
+void Aura::HandleAuraCloneCaster(bool Apply, bool Real)
+{
+    error_log("HandleAuraCloneCaster");
+    if (!Real || !Apply)
+        return;
+
+    Unit * caster = GetCaster();
+    if (!caster)
+        return;
+
+    // Set item visual
+    m_target->SetDisplayId(caster->GetDisplayId());
+    m_target->SetUInt32Value(UNIT_FIELD_FLAGS_2, 2064);
+}
+
 void Aura::HandleAuraLinked(bool apply, bool Real)
 {
     if (!Real)
@@ -8795,3 +8852,4 @@ void Aura::HandleAuraOpenStable(bool apply, bool Real)
     data << uint64(caster->GetGUID());
     ((Player*)caster)->GetSession()->HandleListStabledPetsOpcode(data);
 }
+

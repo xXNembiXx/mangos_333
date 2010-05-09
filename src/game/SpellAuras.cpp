@@ -1372,7 +1372,7 @@ void Aura::ReapplyAffectedPassiveAuras( Unit* target, bool owner_mode )
             // non deleted and not same aura (any with same spell id)
             !itr->second->IsDeleted() && itr->second->GetId() != GetId() &&
             // and affected by aura
-            isAffectedOnSpell(itr->second->GetSpellProto()))
+            isAffectedOnSpell(itr->second->GetSpellProto()) && !itr->second->m_castItemGuid)
         {
             // only applied by self or aura caster
             if (itr->second->GetCasterGUID() == target->GetGUID())

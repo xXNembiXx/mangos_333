@@ -1691,7 +1691,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             else
             {
                 Unit* pUnitTarget = m_targets.getUnitTarget();
-                Unit* originalCaster = GetAffectiveCaster();
+                WorldObject* originalCaster = GetAffectiveCasterObject();
                 if(!pUnitTarget || !originalCaster)
                     break;
 
@@ -6728,7 +6728,20 @@ void Spell::FillRaidOrPartyHealthPriorityTargets(UnitList &targetUnitMap, Unit* 
     }
 }
 
+WorldObject* Spell::GetAffectiveCasterObject() const
+{
+    if (m_originalCasterGUID.IsEmpty())
+        return m_caster;
+
+    if (m_originalCasterGUID.IsGameobject() && m_caster->IsInWorld())
+        return m_caster->GetMap()->GetGameObject(m_originalCasterGUID);
+    return m_originalCaster;
+}
+
 WorldObject* Spell::GetCastingObject() const
 {
-    return m_caster->IsInWorld() && !m_originalCasterGUID.IsEmpty() && m_caster->GetObjectGuid() != m_originalCasterGUID ? m_caster->GetMap()->GetWorldObject(m_originalCasterGUID) : m_caster;
+    if (m_originalCasterGUID.IsGameobject())
+        return m_caster->IsInWorld() ? m_caster->GetMap()->GetGameObject(m_originalCasterGUID) : NULL;
+    else
+        return m_caster;
 }

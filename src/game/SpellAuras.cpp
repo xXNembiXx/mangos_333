@@ -2496,6 +2496,20 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 }
                 break;
             }
+			case SPELLFAMILY_ROGUE:
+			{
+                if (GetId() == 52916) // Honor Among Thieves
+                {
+                    if(m_target->GetTypeId() == TYPEID_PLAYER)
+                    {
+                        if (Unit * target = Unit::GetUnit(*m_target,((Player*)m_target)->GetComboTarget()))
+                            m_target->CastSpell(target, 51699, true);
+                        else if( Unit * target = m_target->getVictim() )
+                            m_target->CastSpell(target, 51699, true);
+                    }
+                }
+                break;
+			}
         }
     }
     // AT REMOVE

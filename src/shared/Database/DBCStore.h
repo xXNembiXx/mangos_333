@@ -52,6 +52,8 @@ class DBCStorage
             }
 
             m_dataTable = (T*)dbc.AutoProduceData(fmt,nCount,(char**&)indexTable,sqlRecordCount,sqlMaxEntry);
+
+            // load strings from dbc data
             m_stringPoolList.push_back(dbc.AutoProduceStrings(fmt,(char*)m_dataTable));
 
             for (int i = sqlMaxEntry, j = 0; i > 0, j != sqlRecordCount; --i)
@@ -78,6 +80,7 @@ class DBCStorage
             if(!dbc.Load(fn, fmt))
                 return false;
 
+            // load strings from another locale dbc data
             m_stringPoolList.push_back(dbc.AutoProduceStrings(fmt,(char*)m_dataTable));
 
             return true;
@@ -111,4 +114,5 @@ class DBCStorage
         T* m_dataTable;
         StringPoolList m_stringPoolList;
 };
+
 #endif

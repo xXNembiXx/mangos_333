@@ -2369,6 +2369,9 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                             // not use ammo and not allow use
                             ((Player*)m_target)->RemoveAmmo();
                         return;
+                    case 48025:                             // Headless Horseman's Mount
+                        Spell::SelectMountByAreaAndSkill(m_target, 51621, 48024, 51617, 48023, NULL);
+                        return;
                     case 55328:                                 // Stoneclaw Totem I
                         m_target->CastSpell(m_target, 5728, true);
                         return;
@@ -2413,6 +2416,15 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                         // Teach Learn Talent Specialization Switches, remove
                         if (m_target->GetTypeId() == TYPEID_PLAYER)
                             ((Player*)m_target)->removeSpell(63680);
+                        return;
+                    case 72286:                             // Invincible
+                        Spell::SelectMountByAreaAndSkill(m_target, 72281, 72282, 72283, 72284, NULL);
+                        return;
+                    case 74856:                             // Blazing Hippogryph
+                        Spell::SelectMountByAreaAndSkill(m_target, NULL, NULL, 74854, 74855, NULL);
+                        return;
+                    case 75614:                             // Celestial Steed
+                        Spell::SelectMountByAreaAndSkill(m_target, 75619, 75620, 75617, 75618, 76153);
                         return;
                 }
                 break;
@@ -8737,29 +8749,6 @@ void Aura::HandleAuraModAllCritChance(bool apply, bool Real)
     ((Player*)m_target)->UpdateAllSpellCritChances();
 }
 
-void Aura::HandleAllowOnlyAbility(bool apply, bool Real)
-{
-    if(!Real)
-        return;
-
-    if(apply)
-    {
-        m_target->setAttackTimer(BASE_ATTACK,m_duration);
-        m_target->setAttackTimer(RANGED_ATTACK,m_duration);
-        m_target->setAttackTimer(OFF_ATTACK,m_duration);
-    }
-    else
-    {
-        m_target->resetAttackTimer(BASE_ATTACK);
-        m_target->resetAttackTimer(RANGED_ATTACK);
-        m_target->resetAttackTimer(OFF_ATTACK);
-    }
-
-    m_target->UpdateDamagePhysical(BASE_ATTACK);
-    m_target->UpdateDamagePhysical(RANGED_ATTACK);
-    m_target->UpdateDamagePhysical(OFF_ATTACK);
-}
-
 void Aura::HandleAuraInitializeImages(bool Apply, bool Real)
 {
     if (!Real || !Apply || !m_target || m_target->GetTypeId() != TYPEID_UNIT)
@@ -8839,3 +8828,25 @@ void Aura::HandleAuraOpenStable(bool apply, bool Real)
     ((Player*)caster)->GetSession()->HandleListStabledPetsOpcode(data);
 }
 
+void Aura::HandleAllowOnlyAbility(bool apply, bool Real)
+{
+    if(!Real)
+        return;
+
+    if(apply)
+    {
+        m_target->setAttackTimer(BASE_ATTACK,m_duration);
+        m_target->setAttackTimer(RANGED_ATTACK,m_duration);
+        m_target->setAttackTimer(OFF_ATTACK,m_duration);
+    }
+    else
+    {
+        m_target->resetAttackTimer(BASE_ATTACK);
+        m_target->resetAttackTimer(RANGED_ATTACK);
+        m_target->resetAttackTimer(OFF_ATTACK);
+    }
+
+    m_target->UpdateDamagePhysical(BASE_ATTACK);
+    m_target->UpdateDamagePhysical(RANGED_ATTACK);
+    m_target->UpdateDamagePhysical(OFF_ATTACK);
+}

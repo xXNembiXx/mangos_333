@@ -24,7 +24,6 @@
 #define BG_WS_MAX_TEAM_SCORE      3
 #define BG_WS_FLAG_RESPAWN_TIME   (23*IN_MILLISECONDS)
 #define BG_WS_FLAG_DROP_TIME      (10*IN_MILLISECONDS)
-#define BG_WS_TIME_LIMIT          (25*MINUTE*IN_MILLISECONDS)
 
 enum BG_WS_Sound
 {
@@ -54,9 +53,7 @@ enum BG_WS_WorldStates
     BG_WS_FLAG_CAPTURES_HORDE     = 1582,
     BG_WS_FLAG_CAPTURES_MAX       = 1601,
     BG_WS_FLAG_STATE_HORDE        = 2338,
-    BG_WS_FLAG_STATE_ALLIANCE     = 2339,
-    BG_WS_UNK1                    = 4247, // Show time limit?
-    BG_WS_TIME_REMAINING          = 4248
+    BG_WS_FLAG_STATE_ALLIANCE     = 2339
 };
 
 enum BG_WS_FlagState
@@ -144,8 +141,6 @@ class BattleGroundWS : public BattleGround
         void AddPoint(uint32 TeamID, uint32 Points = 1)     { m_TeamScores[GetTeamIndexByTeamId(TeamID)] += Points; }
         void SetTeamPoint(uint32 TeamID, uint32 Points = 0) { m_TeamScores[GetTeamIndexByTeamId(TeamID)] = Points; }
         void RemovePoint(uint32 TeamID, uint32 Points = 1)  { m_TeamScores[GetTeamIndexByTeamId(TeamID)] -= Points; }
-
-        uint32 GetRemainingTimeInMinutes() { return (uint32)ceil(float(m_EndTimer) / (MINUTE * IN_MILLISECONDS)); }
     private:
         uint64 m_FlagKeepers[BG_TEAMS_COUNT];
 
@@ -157,7 +152,5 @@ class BattleGroundWS : public BattleGround
         uint32 m_ReputationCapture;
         uint32 m_HonorWinKills;
         uint32 m_HonorEndKills;
-        uint32 m_EndTimer;
-        uint32 m_LastCapturedFlagTeam;
 };
 #endif

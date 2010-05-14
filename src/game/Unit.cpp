@@ -9278,6 +9278,7 @@ uint32 Unit::SpellDamageBonusDone(Unit *pVictim, SpellEntry const *spellProto, u
 
     float DoneTotalMod = 1.0f;
     int32 DoneTotal = 0;
+	float bonusApCoeff = 1.0f; 
 
     // Creature damage
     if( GetTypeId() == TYPEID_UNIT && !((Creature*)this)->isPet() )
@@ -9566,7 +9567,25 @@ uint32 Unit::SpellDamageBonusDone(Unit *pVictim, SpellEntry const *spellProto, u
 
     // Done fixed damage bonus auras
     int32 DoneAdvertisedBenefit = SpellBaseDamageBonusDone(GetSpellSchoolMask(spellProto));
-
+	// ..done custom 
+    if (GetTypeId() == TYPEID_PLAYER) 
+    { 
+        // Impurity 
+        uint32 impurityId = 0; 
+        if (HasSpell(49638)) 
+            impurityId = 49638; 
+        else if (HasSpell(49636)) 
+            impurityId = 49636; 
+        else if (HasSpell(49635)) 
+            impurityId = 49635; 
+        else if (HasSpell(49633)) 
+            impurityId = 49633; 
+        else if (HasSpell(49220)) 
+            impurityId = 49220; 
+        if (const SpellEntry *i_spellProto = sSpellStore.LookupEntry(impurityId)) 
+             bonusApCoeff += float(i_spellProto->CalculateSimpleValue(EFFECT_INDEX_0)) / 100.0f; 
+    }
+	
     // Pets just add their bonus damage to their spell damage
     // note that their spell damage is just gain of their own auras
     if (GetTypeId() == TYPEID_UNIT && ((Creature*)this)->isPet())
@@ -9586,7 +9605,7 @@ uint32 Unit::SpellDamageBonusDone(Unit *pVictim, SpellEntry const *spellProto, u
             coeff = bonus->direct_damage * LvlPenalty;
 
         if (bonus->ap_bonus)
-            DoneTotal += int32(bonus->ap_bonus * GetTotalAttackPowerValue(BASE_ATTACK));
+            DoneTotal += int32(bonus->ap_bonus * bonusApCoeff * GetTotalAttackPowerValue(BASE_ATTACK));
 
         // Spellmod SpellBonusDamage
         if (modOwner)
@@ -10558,6 +10577,7 @@ uint32 Unit::MeleeDamageBonusDone(Unit *pVictim, uint32 pdamage,WeaponAttackType
     // PERCENT damage auras
     // ====================
     float DonePercent   = 1.0f;
+	float bonusApCoeff  = 1.0f; 
 
     // ..done pct, already included in weapon damage based spells
     if(!isWeaponDamageBasedSpell)
@@ -10638,7 +10658,25 @@ uint32 Unit::MeleeDamageBonusDone(Unit *pVictim, uint32 pdamage,WeaponAttackType
             }
         }
     }
-
+	// ..done custom 
+    if (GetTypeId() == TYPEID_PLAYER) 
+    { 
+        // Impurity 
+        uint32 impurityId = 0; 
+        if (HasSpell(49638)) 
+           impurityId = 49638; 
+        else if (HasSpell(49636)) 
+           impurityId = 49636; 
+        else if (HasSpell(49635)) 
+           impurityId = 49635; 
+        else if (HasSpell(49633)) 
+           impurityId = 49633; 
+        else if (HasSpell(49220)) 
+           impurityId = 49220; 
+ 
+        if (const SpellEntry *i_spellProto = sSpellStore.LookupEntry(impurityId)) 
+           bonusApCoeff += float(i_spellProto->CalculateSimpleValue(EFFECT_INDEX_0)) / 100.0f; 
+    }
     // .. done (class scripts)
     AuraList const& mclassScritAuras = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
     for(AuraList::const_iterator i = mclassScritAuras.begin(); i != mclassScritAuras.end(); ++i)
@@ -10713,7 +10751,7 @@ uint32 Unit::MeleeDamageBonusDone(Unit *pVictim, uint32 pdamage,WeaponAttackType
                 coeff = bonus->direct_damage * LvlPenalty;
 
             if (bonus->ap_bonus)
-                DoneFlat += bonus->ap_bonus * (GetTotalAttackPowerValue(BASE_ATTACK) + APbonus);
+                DoneFlat += bonus->ap_bonus * bonusApCoeff * (GetTotalAttackPowerValue(BASE_ATTACK) + APbonus);
 
             DoneFlat  *= coeff;
         }

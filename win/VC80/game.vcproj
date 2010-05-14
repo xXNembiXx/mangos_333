@@ -850,6 +850,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\game\MapUpdater.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\MapUpdater.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\game\MiscHandler.cpp"
 				>
 			</File>

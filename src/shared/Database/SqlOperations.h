@@ -115,7 +115,7 @@ class SqlQueryHolderEx : public SqlOperation
         SqlResultQueue * m_queue;
     public:
         SqlQueryHolderEx(SqlQueryHolder *holder, MaNGOS::IQueryCallback * callback, SqlResultQueue * queue)
-            : m_holder(holder), m_callback(callback), m_queue(queue) {}			
+            : m_holder(holder), m_callback(callback), m_queue(queue) {}
         void Execute(Database *db);
 };
 
@@ -123,29 +123,14 @@ class SqlAsyncTask : public ACE_Method_Request
 {
 public:
     SqlAsyncTask(Database * db, SqlOperation * op) : m_db(db), m_op(op) {}
-    ~SqlAsyncTask()
-	{
-    	if(!m_op)
-    		return; 
-        
-		delete m_op;
-        m_op = NULL;
-	}
+    ~SqlAsyncTask() { if(!m_op) return; delete m_op; }
 
     int call()
     {
         if(this == NULL || !m_db || !m_op)
             return -1;
 
-        try
-		{
-            m_op->Execute(m_db);
-		}
-		catch(...)
-		{
-		    return -1;
-		}
-		
+        m_op->Execute(m_db);
         return 0;
     }
 

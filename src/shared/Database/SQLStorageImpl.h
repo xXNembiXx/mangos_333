@@ -118,7 +118,7 @@ void SQLStorageLoaderBase<T>::storeValue(char * value, SQLStorage &store, char *
 }
 
 template<class T>
-void SQLStorageLoaderBase<T>::Load(SQLStorage &store, bool silent)
+void SQLStorageLoaderBase<T>::Load(SQLStorage &store)
 {
     uint32 maxi;
     Field *fields;
@@ -180,7 +180,7 @@ void SQLStorageLoaderBase<T>::Load(SQLStorage &store, bool silent)
 
     char * _data= new char[store.RecordCount *recordsize];
     uint32 count=0;
-    barGoLink bar( silent ? 0 : store.RecordCount );
+    barGoLink bar( store.RecordCount );
     do
     {
         fields = result->Fetch();

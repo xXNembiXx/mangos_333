@@ -259,6 +259,10 @@ void Spell::EffectResurrectNew(SpellEffectIndex eff_idx)
         return;
 
     uint32 health = damage;
+	
+    if (m_caster->HasAura(54733, EFFECT_INDEX_0)) // Glyph of Rebirth
+        health = pTarget->GetMaxHealth();
+
     uint32 mana = m_spellInfo->EffectMiscValue[eff_idx];
     pTarget->setResurrectRequestData(m_caster->GetGUID(), m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), health, mana);
     SendResurrectRequest(pTarget);
@@ -6195,6 +6199,25 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     unitTarget->RemoveSpellsCausingAura(SPELL_AURA_MOD_STUN);
                     return;
                 }
+				// Glyph of Starfire
+                case 54846:
+                {
+                    if (Aura * aurEff = unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_DRUID,0x00000002,0,m_caster->GetGUID()))
+                    {
+                        uint32 countMin = aurEff->GetAuraMaxDuration();
+                        uint32 countMax = 18000;
+                        countMax += m_caster->HasAura(38414) ? 3000 : 0;
+                        countMax += m_caster->HasAura(57865) ? 3000 : 0;
+
+                        if (countMin < countMax)
+                        {
+                            aurEff->SetAuraDuration(uint32(aurEff->GetAuraDuration()+3000));
+                            aurEff->SetAuraMaxDuration(countMin+3000);
+                            aurEff->SendAuraUpdate(false);
+                        }
+                    }
+                    return;
+                }
                 case 55328:                                    // Stoneclaw Totem I
                 case 55329:                                    // Stoneclaw Totem II
                 case 55330:                                    // Stoneclaw Totem III
@@ -6327,6 +6350,45 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                         return;
 
                     m_caster->CastSpell(unitTarget, 72588, true);
+                    return;
+                }
+				// Glyph of Shred
+                case 63974:
+                {
+                    if (Aura * aurEff = unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_DRUID,0x00800000,0,m_caster->GetGUID()))
+                    {
+                        uint32 countMin = aurEff->GetAuraMaxDuration();
+                        uint32 countMax = 20000;
+                        countMax += m_caster->HasAura(54818) ? 4000 : 0;
+                        countMax += m_caster->HasAura(60141) ? 4000 : 0;
+
+                        if (countMin < countMax)
+                        {
+                            aurEff->SetAuraDuration(uint32(aurEff->GetAuraDuration()+3000));
+                            aurEff->SetAuraMaxDuration(countMin+2000);
+                            aurEff->SendAuraUpdate(false);
+                        }
+
+                    }
+                    return;
+                }
+                // Glyph of Backstab
+                case 63975:
+                {
+                    if (Aura * aurEff = unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_ROGUE,0x00100000,0,m_caster->GetGUID()))
+                    {
+                        uint32 countMin = aurEff->GetAuraMaxDuration();
+                        uint32 countMax = 12000;
+                        countMax += m_caster->HasAura(56801) ? 4000 : 0;
+
+                        if (countMin < countMax)
+                        {
+                            aurEff->SetAuraDuration(uint32(aurEff->GetAuraDuration()+3000));
+                            aurEff->SetAuraMaxDuration(countMin+2000);
+                            aurEff->SendAuraUpdate(false);
+                        }
+
+                    }
                     return;
                 }
             }
@@ -7639,6 +7701,20 @@ void Spell::EffectKnockBack(SpellEffectIndex eff_idx)
 {
     if(!unitTarget)
         return;
+		
+	 // Typhoon
+    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags & UI64LIT(0x100000000000000) )
+        if (m_caster->HasAura(62135))         // Glyph of Typhoon
+            return;
+
+    // Thunderstorm
+    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags & UI64LIT(0x00200000000000))
+        if (m_caster->HasAura(62132))         // Glyph of Thunderstorm
+            return;
+
+    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && m_spellInfo->SpellFamilyFlags & UI64LIT(0x0004000000000))
+        if (m_caster->HasAura(62126))         // Glyph of Blast Wave
+            return;
 
     unitTarget->KnockBackFrom(m_caster,float(m_spellInfo->EffectMiscValue[eff_idx])/10,float(damage)/10);
 }

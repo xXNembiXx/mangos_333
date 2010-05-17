@@ -6328,6 +6328,20 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     // triggered_spell_id in spell data
                     break;
                 }
+                // Item - Priest T10 Healer 4P Bonus
+                case 70799:
+                {
+                    if (GetTypeId() != TYPEID_PLAYER)
+                        return false;
+                    
+                    // Circle of Healing
+                    ((Player*)this)->RemoveSpellCategoryCooldown(1204, true);
+
+                    // Penance
+                    ((Player*)this)->RemoveSpellCategoryCooldown(1230, true);
+
+                    return true;
+                }
                 // Glyph of Prayer of Healing
                 case 55680:
                 {
@@ -6464,6 +6478,14 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
 
                     pVictim->CastSpell(second, procSpell, true, NULL, triggeredByAura, GetGUID());
                     return true;
+                }
+				// Item - Druid T10 Balance 4P Bonus
+                case 70723:
+                {
+                    basepoints[0] = int32( triggerAmount * damage / 100 );
+                    basepoints[0] = int32( basepoints[0] / 2);
+                    triggered_spell_id = 71023;
+                    break;
                 }
             }
             // King of the Jungle
@@ -6994,6 +7016,15 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     target = this;
                     break;
                 }
+				// Item - Paladin T10 Retribution 2P Bonus
+                case 70765:
+                {
+                    if (GetTypeId() != TYPEID_PLAYER)
+                        return false;
+
+                    ((Player*)this)->RemoveSpellCooldown(53385, true);
+                    return true;
+                }
             }
             break;
         }
@@ -7191,16 +7222,36 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 // Shaman T8 Elemental 4P Bonus
                 case 64928:
                 {
-                    basepoints[0] = int32( triggerAmount * damage / 100 );
+                    basepoints[0] = int32(  basepoints[0] / 2); // basepoints is for 1 tick, not all DoT amount
                     triggered_spell_id = 64930;            // Electrified
                     break;
                 }
                 // Shaman T9 Elemental 4P Bonus
                 case 67228:
                 {
-                    basepoints[0] = int32( triggerAmount * damage / 100 );
+                    basepoints[0] = int32(  basepoints[0] / 3); // basepoints is for 1 tick, not all DoT amount
                     triggered_spell_id = 71824;
                     break;
+                }
+                // Item - Shaman T10 Restoration 4P Bonus
+                case 70808:
+                {
+                    basepoints[0] = int32( triggerAmount * damage / 100 );
+                    basepoints[0] = int32( basepoints[0] / 3); // basepoints is for 1 tick, not all DoT amount
+                    triggered_spell_id = 70809;
+                    break;
+                }
+				// Item - Shaman T10 Elemental 4P Bonus
+                case 70817:
+                {
+                    if (Aura *aur = pVictim->GetAura(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_SHAMAN, UI64LIT(0x0000000010000000), 0, GetGUID()))
+                    {
+                        int32 amount = aur->GetAuraDuration() + triggerAmount * IN_MILLISECONDS;
+                        aur->SetAuraDuration(amount);
+                        aur->SendAuraUpdate(false);
+                        return true;
+                    }
+                    return false;
                 }
             }
             // Storm, Earth and Fire
@@ -8094,6 +8145,14 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
             }
             break;
         }
+		case SPELLFAMILY_ROGUE:
+            // Item - Rogue T10 2P Bonus
+            if (auraSpellInfo->Id == 70805)
+            {
+                if (pVictim != this)
+                    return false;
+            }
+            break;
         case SPELLFAMILY_HUNTER:
             // Piercing Shots
             if (auraSpellInfo->SpellIconID == 3247 && auraSpellInfo->SpellVisual[0] == 0)
@@ -8315,6 +8374,16 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
                 if (procSpell->Id != 47633)
                     return false;
             }
+			// Item - Death Knight T10 Melee 4P Bonus
+            else if (auraSpellInfo->Id == 70656)
+            {
+                if (GetTypeId() != TYPEID_PLAYER || getClass() != CLASS_DEATH_KNIGHT)
+                    return false;
+
+                for(uint32 i = 0; i < MAX_RUNES; ++i)
+                    if (((Player*)this)->GetRuneCooldown(i) == 0)
+                        return false;
+            }
             // Blade Barrier
             else if (auraSpellInfo->SpellIconID == 85)
             {
@@ -8461,8 +8530,16 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
             // 5 rank -> 100% 4 rank -> 80% and etc from full rate
             if(!roll_chance_i(20*rank))
                 return false;
-            break;
-        }
+			// Item - Shaman T10 Enhancement 4P Bonus
+            if (Aura *aur = GetAura(70832, EFFECT_INDEX_0))
+            {
+                Aura *maelBuff = GetAura(trigger_spell_id, EFFECT_INDEX_0);
+                if (maelBuff && maelBuff->GetStackAmount() + 1 == maelBuff->GetSpellProto()->StackAmount)
+                    if (roll_chance_i(aur->GetModifier()->m_amount))
+                        CastSpell(this, 70831, true, NULL, aur);
+            }
+			break;
+		}
         // Brain Freeze
         case 57761:
         {

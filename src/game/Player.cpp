@@ -11823,6 +11823,46 @@ void Player::SwapItem( uint16 src, uint16 dst )
         return;
     }
 
+	if(pSrcItem->IsBag())
+    {
+        Bag* bag = (Bag*)pSrcItem;
+
+        for(uint32 i = 0; i < bag->GetBagSize(); ++i)
+        {
+            if(Item* item = bag->GetItemByPos(i))
+            {
+                for(uint8 j = 0; j < TRADE_SLOT_COUNT; ++j)
+                {
+                    if(tradeItems[j] == item->GetPos())
+                    {
+                        SendEquipError(EQUIP_ERR_CANT_DO_RIGHT_NOW, pSrcItem, pDstItem);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    if(pDstItem && pDstItem->IsBag())
+    {
+        Bag* bag = (Bag*)pDstItem;
+
+        for(uint32 i = 0; i < bag->GetBagSize(); ++i)
+        {
+            if(Item* item = bag->GetItemByPos(i))
+            {
+                for(uint8 j = 0; j < TRADE_SLOT_COUNT; ++j)
+                {
+                    if(tradeItems[j] == item->GetPos())
+                    {
+                        SendEquipError(EQUIP_ERR_CANT_DO_RIGHT_NOW, pSrcItem, pDstItem);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     // DST checks
 
     if (pDstItem)

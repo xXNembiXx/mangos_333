@@ -7220,6 +7220,11 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     target = this;
                     break;
                 }
+				// Earthen Power (Rank 1,2)
+                case 51523:
+                case 51524:
+                    triggered_spell_id = 63532;
+                    break;
                 // Glyph of Healing Wave
                 case 55440:
                 {

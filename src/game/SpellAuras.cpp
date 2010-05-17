@@ -8598,6 +8598,12 @@ void Aura::PeriodicDummyTick()
             // Mirror Image
             if (spell->Id == 55342)
             {
+				if(m_target->GetTypeId() != TYPEID_PLAYER)
+					break;
+				//Clear target
+				WorldPacket data(SMSG_CLEAR_TARGET, 8);
+				data << m_target->GetGUID();
+				((Player*)m_target)->SendMessageToSetInRange(&data, 80.0f, false);
                 // Set name of summons to name of caster
                 m_target->CastSpell(m_target, m_spellProto->EffectTriggerSpell[m_effIndex], true);
                 m_isPeriodic = false;

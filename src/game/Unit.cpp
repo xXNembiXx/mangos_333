@@ -8430,6 +8430,14 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
                 if (procSpell->Id != 47633)
                     return false;
             }
+			// Glyph of Death Grip
+            if (auraSpellInfo->Id == 62259)
+            {
+                // remove cooldown of Death Grip
+                if (GetTypeId()==TYPEID_PLAYER)
+                    ((Player*)this)->RemoveSpellCooldown(49576, true);
+                return true;
+            }
 			// Item - Death Knight T10 Melee 4P Bonus
             else if (auraSpellInfo->Id == 70656)
             {

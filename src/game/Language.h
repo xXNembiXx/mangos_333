@@ -792,7 +792,9 @@ enum MangosStrings
     LANG_CHARACTER_DELETED_SKIP_FULL    = 1024,
     LANG_CHARACTER_DELETED_SKIP_NAME    = 1025,
     LANG_CHARACTER_DELETED_LIST_LINE_CHAT = 1026,
-    // Room for more level 4              1027-1099 not used
+    LANG_LOG_FILTERS_STATE_HEADER       = 1027,
+    LANG_ALL_LOG_FILTERS_SET_TO_S       = 1028,
+    // Room for more level 4              1029-1099 not used
 
     // Level 3 (continue)
     LANG_ACCOUNT_SETADDON               = 1100,
@@ -854,6 +856,7 @@ enum MangosStrings
     //                                    10000-10999
 
     // Use for custom patches             11000-11999
+    LANG_ANNOUNCE_CHEAT                 = 11000,
 
     // NOT RESERVED IDS                   12000-1999999999
     // `db_script_string` table index     2000000000-2000009999 (MIN_DB_SCRIPT_STRING_ID-MAX_DB_SCRIPT_STRING_ID)

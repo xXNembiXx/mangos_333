@@ -420,9 +420,7 @@ void World::LoadConfigSettings(bool reload)
         sLog.outError(" WARNING: mangosd.conf does not include a ConfVersion variable.");
         sLog.outError("          Your configuration file may be out of date!");
         sLog.outError("*****************************************************************************");
-        clock_t pause = 3000 + clock();
-        while (pause > clock())
-            ;                                               // empty body
+        Log::WaitBeforeContinueIfNeed();
     }
     else
     {
@@ -433,9 +431,7 @@ void World::LoadConfigSettings(bool reload)
             sLog.outError("          Please check for updates, as your current default values may cause");
             sLog.outError("          unexpected behavior.");
             sLog.outError("*****************************************************************************");
-            clock_t pause = 3000 + clock();
-            while (pause > clock())
-                ;                                           // empty body
+            Log::WaitBeforeContinueIfNeed();
         }
     }
 
@@ -520,6 +516,7 @@ void World::LoadConfigSettings(bool reload)
     // movement anticheat
     m_MvAnticheatEnable                     = sConfig.GetBoolDefault("Anticheat.Movement.Enable",false);
     m_MvAnticheatKick                       = sConfig.GetBoolDefault("Anticheat.Movement.Kick",false);
+    m_MvAnticheatAnnounce                   = sConfig.GetBoolDefault("Anticheat.Movement.Announce",false);
     m_MvAnticheatAlarmCount                 = (uint32)sConfig.GetIntDefault("Anticheat.Movement.AlarmCount", 5);
     m_MvAnticheatAlarmPeriod                = (uint32)sConfig.GetIntDefault("Anticheat.Movement.AlarmTime", 5000);
     m_MvAntiCheatBan                        = (unsigned char)sConfig.GetIntDefault("Anticheat.Movement.BanType",0);
@@ -528,6 +525,14 @@ void World::LoadConfigSettings(bool reload)
     m_MvAnticheatKill                       = sConfig.GetBoolDefault("Anticheat.Movement.Kill",false);
     m_MvAnticheatMaxXYT                     = sConfig.GetFloatDefault("Anticheat.Movement.MaxXYT",0.04f);
     m_MvAnticheatIgnoreAfterTeleport        = (uint16)sConfig.GetIntDefault("Anticheat.Movement.IgnoreSecAfterTeleport",10);
+
+    m_MvAnticheatSpeedCheck                 = sConfig.GetBoolDefault("Anticheat.Movement.DetectSpeedHack",1);
+    m_MvAnticheatWaterCheck                 = sConfig.GetBoolDefault("Anticheat.Movement.DetectWaterWalk",1);
+    m_MvAnticheatFlyCheck                   = sConfig.GetBoolDefault("Anticheat.Movement.DetectFlyHack",1);
+    m_MvAnticheatMountainCheck              = sConfig.GetBoolDefault("Anticheat.Movement.DetectMountainHack",1);
+    m_MvAnticheatJumpCheck                  = sConfig.GetBoolDefault("Anticheat.Movement.DetectAirJumpHack",1);
+    m_MvAnticheatTeleportCheck              = sConfig.GetBoolDefault("Anticheat.Movement.DetectTeleportHack",1);
+    m_MvAnticheatTeleport2PlaneCheck        = sConfig.GetBoolDefault("Anticheat.Movement.DetectTeleport2PlaneHack",0);
 
     setConfigMinMax(CONFIG_UINT32_COMPRESSION, "Compression", 1, 1, 9);
     setConfig(CONFIG_BOOL_ADDON_CHANNEL, "AddonChannel", true);

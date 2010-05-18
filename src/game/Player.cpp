@@ -448,7 +448,7 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
     m_anti_TeleTime = 0;
     m_CanFly=false;
     /////////////////////////////////
- 
+
     m_mailsUpdated = false;
     unReadMails = 0;
     m_nextMailDelivereTime = 0;
@@ -4290,7 +4290,7 @@ void Player::DeleteOldCharacters(uint32 keepDays)
     QueryResult *resultChars = CharacterDatabase.PQuery("SELECT guid, deleteInfos_Account FROM characters WHERE deleteDate IS NOT NULL AND deleteDate < '" UI64FMTD "'", uint64(time(NULL) - time_t(keepDays * DAY)));
     if (resultChars)
     {
-        sLog.outString("Player::DeleteOldChars: Found %u character(s) to delete",resultChars->GetRowCount());
+        sLog.outString("Player::DeleteOldChars: Found %u character(s) to delete",uint32(resultChars->GetRowCount()));
         do
         {
             Field *charFields = resultChars->Fetch();
@@ -7900,7 +7900,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
 
                     loot->generateMoneyLoot(creature->GetCreatureInfo()->mingold,creature->GetCreatureInfo()->maxgold);
 
-                    if (Group* group = recipient->GetGroup())
+                    if (Group* group = creature->GetGroupLootRecipient())
                     {
                         group->UpdateLooterGuid(creature,true);
 
@@ -7908,13 +7908,13 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                         {
                             case GROUP_LOOT:
                                 // GroupLoot delete items over threshold (threshold even not implemented), and roll them. Items with quality<threshold, round robin
-                                group->GroupLoot(recipient->GetObjectGuid(), loot, creature);
+                                group->GroupLoot(creature, loot);
                                 break;
                             case NEED_BEFORE_GREED:
-                                group->NeedBeforeGreed(recipient->GetObjectGuid(), loot, creature);
+                                group->NeedBeforeGreed(creature, loot);
                                 break;
                             case MASTER_LOOT:
-                                group->MasterLoot(recipient->GetObjectGuid(), loot, creature);
+                                group->MasterLoot(creature, loot);
                                 break;
                             default:
                                 break;
@@ -7931,9 +7931,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                 // set group rights only for loot_type != LOOT_SKINNING
                 else
                 {
-                    if(Group* group = GetGroup())
+                    if(Group* group = creature->GetGroupLootRecipient())
                     {
-                        if (group == recipient->GetGroup())
+                        if (group == GetGroup())
                         {
                             if (group->GetLootMethod() == FREE_FOR_ALL)
                                 permission = ALL_PERMISSION;
@@ -8105,6 +8105,8 @@ static WorldStatePair WS_world_states[] =
     { 0x641, 0x3 },                                         // 12 1601 unk (max flag captures?)
     { 0x922, 0x1 },                                         // 13 2338 horde (0 - hide, 1 - flag ok, 2 - flag picked up (flashing), 3 - flag picked up (not flashing)
     { 0x923, 0x1 },                                         // 14 2339 alliance (0 - hide, 1 - flag ok, 2 - flag picked up (flashing), 3 - flag picked up (not flashing)
+    { 0x1097,0x1 },                                         // 15 4247 show time limit?
+    { 0x1098,0x19 },                                        // 16 4248 time remaining in minutes
     { 0x0,   0x0 }
 };
 
@@ -14329,7 +14331,7 @@ void Player::KilledMonsterCredit( uint32 entry, ObjectGuid guid )
             continue;
         // just if !ingroup || !noraidgroup || raidgroup
         QuestStatusData& q_status = mQuestStatus[questid];
-        if( q_status.m_status == QUEST_STATUS_INCOMPLETE && (!GetGroup() || !GetGroup()->isRaidGroup() || qInfo->GetType() == QUEST_TYPE_RAID))
+        if( q_status.m_status == QUEST_STATUS_INCOMPLETE && (!GetGroup() || !GetGroup()->isRaidGroup() || qInfo->IsAllowedInRaid())
         {
             if( qInfo->HasFlag( QUEST_MANGOS_FLAGS_KILL_OR_CAST) )
             {
@@ -14572,8 +14574,7 @@ bool Player::HasQuestForItem( uint32 itemid ) const
                 continue;
 
             // hide quest if player is in raid-group and quest is no raid quest
-            if (GetGroup() && GetGroup()->isRaidGroup() && qinfo->GetType() != QUEST_TYPE_RAID
-                && !InBattleGround())
+            if (GetGroup() && GetGroup()->isRaidGroup() && qinfo->IsAllowedInRaid() && !InBattleGround())
                 continue;
 
             // There should be no mixed ReqItem/ReqSource drop
@@ -15507,25 +15508,24 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 
 bool Player::isAllowedToLoot(Creature* creature)
 {
-    if(creature && creature->isDead() && !creature->AreLootAndRewardAllowed())
-        return false;
-
     if(Player* recipient = creature->GetLootRecipient())
     {
         if (recipient == this)
             return true;
-        if( Group* otherGroup = recipient->GetGroup())
+
+        if (Group* otherGroup = recipient->GetGroup())
         {
             Group* thisGroup = GetGroup();
-            if(!thisGroup)
+            if (!thisGroup)
                 return false;
+
             return thisGroup == otherGroup;
         }
         return false;
     }
     else
         // prevent other players from looting if the recipient got disconnected
-        return !creature->hasLootRecipient();
+        return !creature->HasLootRecipient();
 }
 
 void Player::_LoadActions(QueryResult *result)
@@ -19897,7 +19897,7 @@ bool Player::HasQuestForGO(int32 GOId) const
             if(!qinfo)
                 continue;
 
-            if(GetGroup() && GetGroup()->isRaidGroup() && qinfo->GetType() != QUEST_TYPE_RAID)
+            if(GetGroup() && GetGroup()->isRaidGroup() && qinfo->IsAllowedInRaid())
                 continue;
 
             for (int j = 0; j < QUEST_OBJECTIVES_COUNT; ++j)
@@ -20193,99 +20193,28 @@ bool Player::isHonorOrXPTarget(Unit* pVictim) const
     return true;
 }
 
-bool Player::RewardPlayerAndGroupAtKill(Unit* pVictim)
+bool Player::RewardSinglePlayerAtKill(Unit* pVictim)
 {
     bool PvP = pVictim->isCharmedOwnedByPlayerOrPlayer();
+    uint32 xp = PvP ? 0 : MaNGOS::XP::Gain(this, pVictim);
 
-    // prepare data for near group iteration (PvP and !PvP cases)
-    uint32 xp = 0;
-    bool honored_kill = false;
+    // honor can be in PvP and !PvP (racial leader) cases
+    bool honored_kill = RewardHonor(pVictim,1);
 
-    if(Group *pGroup = GetGroup())
+    // xp and reputation only in !PvP case
+    if(!PvP)
     {
-        uint32 count = 0;
-        uint32 sum_level = 0;
-        Player* member_with_max_level = NULL;
-        Player* not_gray_member_with_max_level = NULL;
+        RewardReputation(pVictim,1);
+        GiveXP(xp, pVictim);
 
-        pGroup->GetDataForXPAtKill(pVictim,count,sum_level,member_with_max_level,not_gray_member_with_max_level);
+        if(Pet* pet = GetPet())
+            pet->GivePetXP(xp);
 
-        if(member_with_max_level)
-        {
-            /// not get Xp in PvP or no not gray players in group
-            xp = (PvP || !not_gray_member_with_max_level) ? 0 : MaNGOS::XP::Gain(not_gray_member_with_max_level, pVictim);
-
-            /// skip in check PvP case (for speed, not used)
-            bool is_raid = PvP ? false : sMapStore.LookupEntry(GetMapId())->IsRaid() && pGroup->isRaidGroup();
-            bool is_dungeon = PvP ? false : sMapStore.LookupEntry(GetMapId())->IsDungeon();
-            float group_rate = MaNGOS::XP::xp_in_group_rate(count,is_raid);
-
-            for(GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
-            {
-                Player* pGroupGuy = itr->getSource();
-                if(!pGroupGuy)
-                    continue;
-
-                if(!pGroupGuy->IsAtGroupRewardDistance(pVictim))
-                    continue;                               // member (alive or dead) or his corpse at req. distance
-
-                // honor can be in PvP and !PvP (racial leader) cases (for alive)
-                if(pGroupGuy->isAlive() && pGroupGuy->RewardHonor(pVictim,count) && pGroupGuy==this)
-                    honored_kill = true;
-
-                // xp and reputation only in !PvP case
-                if(!PvP)
-                {
-                    float rate = group_rate * float(pGroupGuy->getLevel()) / sum_level;
-
-                    // if is in dungeon then all receive full reputation at kill
-                    // rewarded any alive/dead/near_corpse group member
-                    pGroupGuy->RewardReputation(pVictim,is_dungeon ? 1.0f : rate);
-
-                    // XP updated only for alive group member
-                    if(pGroupGuy->isAlive() && not_gray_member_with_max_level &&
-                       pGroupGuy->getLevel() <= not_gray_member_with_max_level->getLevel())
-                    {
-                        uint32 itr_xp = (member_with_max_level == not_gray_member_with_max_level) ? uint32(xp*rate) : uint32((xp*rate/2)+1);
-
-                        pGroupGuy->GiveXP(itr_xp, pVictim);
-                        if(Pet* pet = pGroupGuy->GetPet())
-                            pet->GivePetXP(itr_xp/2);
-                    }
-
-                    // quest objectives updated only for alive group member or dead but with not released body
-                    if(pGroupGuy->isAlive()|| !pGroupGuy->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
-                    {
-                        // normal creature (not pet/etc) can be only in !PvP case
-                        if(pVictim->GetTypeId()==TYPEID_UNIT)
-                            pGroupGuy->KilledMonster(((Creature*)pVictim)->GetCreatureInfo(), pVictim->GetObjectGuid());
-                    }
-                }
-            }
-        }
+        // normal creature (not pet/etc) can be only in !PvP case
+        if(pVictim->GetTypeId()==TYPEID_UNIT)
+            KilledMonster(((Creature*)pVictim)->GetCreatureInfo(), pVictim->GetObjectGuid());
     }
-    else                                                    // if (!pGroup)
-    {
-        xp = PvP ? 0 : MaNGOS::XP::Gain(this, pVictim);
 
-        // honor can be in PvP and !PvP (racial leader) cases
-        if(RewardHonor(pVictim,1))
-            honored_kill = true;
-
-        // xp and reputation only in !PvP case
-        if(!PvP)
-        {
-            RewardReputation(pVictim,1);
-            GiveXP(xp, pVictim);
-
-            if(Pet* pet = GetPet())
-                pet->GivePetXP(xp);
-
-            // normal creature (not pet/etc) can be only in !PvP case
-            if(pVictim->GetTypeId()==TYPEID_UNIT)
-                KilledMonster(((Creature*)pVictim)->GetCreatureInfo(), pVictim->GetObjectGuid());
-        }
-    }
     return xp || honored_kill;
 }
 
@@ -21209,11 +21138,9 @@ uint8 Player::CanEquipUniqueItem( ItemPrototype const* itemProto, uint8 except_s
 void Player::HandleFall(MovementInfo const& movementInfo)
 {
     // calculate total z distance of the fall
-    //float z_diff = m_lastFallZ - movementInfo.z;
     float z_diff = (m_lastFallZ >= m_anti_BeginFallZ ? m_lastFallZ : m_anti_BeginFallZ) - movementInfo.GetPos()->z;
-     
+
     m_anti_BeginFallZ=INVALID_HEIGHT;
-    //float z_diff = m_lastFallZ - movementInfo.GetPos()->z;
     DEBUG_LOG("zDiff = %f", z_diff);
 
     //Players with low fall distance, Feather Fall or physical immunity (charges used) are ignored
@@ -21806,19 +21733,33 @@ void Player::_SaveEquipmentSets()
                 ++itr;
                 break;                                      // nothing do
             case EQUIPMENT_SET_CHANGED:
+            {
+                // prevent SQL injection
+                std::string db_IconName = eqset.IconName;
+                std::string db_Name = eqset.Name;
+                CharacterDatabase.escape_string(db_IconName);
+                CharacterDatabase.escape_string(db_Name);
                 CharacterDatabase.PExecute("UPDATE character_equipmentsets SET name='%s', iconname='%s', item0='%u', item1='%u', item2='%u', item3='%u', item4='%u', item5='%u', item6='%u', item7='%u', item8='%u', item9='%u', item10='%u', item11='%u', item12='%u', item13='%u', item14='%u', item15='%u', item16='%u', item17='%u', item18='%u' WHERE guid='%u' AND setguid='"UI64FMTD"' AND setindex='%u'",
-                    eqset.Name.c_str(), eqset.IconName.c_str(), eqset.Items[0], eqset.Items[1], eqset.Items[2], eqset.Items[3], eqset.Items[4], eqset.Items[5], eqset.Items[6], eqset.Items[7],
+                    db_Name.c_str(), db_IconName.c_str(), eqset.Items[0], eqset.Items[1], eqset.Items[2], eqset.Items[3], eqset.Items[4], eqset.Items[5], eqset.Items[6], eqset.Items[7],
                     eqset.Items[8], eqset.Items[9], eqset.Items[10], eqset.Items[11], eqset.Items[12], eqset.Items[13], eqset.Items[14], eqset.Items[15], eqset.Items[16], eqset.Items[17], eqset.Items[18], GetGUIDLow(), eqset.Guid, index);
                 eqset.state = EQUIPMENT_SET_UNCHANGED;
                 ++itr;
                 break;
+            }
             case EQUIPMENT_SET_NEW:
+            {
+                // prevent SQL injection
+                std::string db_IconName = eqset.IconName;
+                std::string db_Name = eqset.Name;
+                CharacterDatabase.escape_string(db_IconName);
+                CharacterDatabase.escape_string(db_Name);
                 CharacterDatabase.PExecute("INSERT INTO character_equipmentsets VALUES ('%u', '"UI64FMTD"', '%u', '%s', '%s', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
-                    GetGUIDLow(), eqset.Guid, index, eqset.Name.c_str(), eqset.IconName.c_str(), eqset.Items[0], eqset.Items[1], eqset.Items[2], eqset.Items[3], eqset.Items[4], eqset.Items[5], eqset.Items[6], eqset.Items[7],
+                    GetGUIDLow(), eqset.Guid, index, db_Name.c_str(), db_IconName.c_str(), eqset.Items[0], eqset.Items[1], eqset.Items[2], eqset.Items[3], eqset.Items[4], eqset.Items[5], eqset.Items[6], eqset.Items[7],
                     eqset.Items[8], eqset.Items[9], eqset.Items[10], eqset.Items[11], eqset.Items[12], eqset.Items[13], eqset.Items[14], eqset.Items[15], eqset.Items[16], eqset.Items[17], eqset.Items[18]);
                 eqset.state = EQUIPMENT_SET_UNCHANGED;
                 ++itr;
                 break;
+            }
             case EQUIPMENT_SET_DELETED:
                 CharacterDatabase.PExecute("DELETE FROM character_equipmentsets WHERE setguid="UI64FMTD, eqset.Guid);
                 m_EquipmentSets.erase(itr++);

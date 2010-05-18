@@ -269,6 +269,9 @@ MapUpdate.Threads = 2
 #    LogFilter_SQLText
 #    LogFilter_AIAndMovegens
 #    LogFilter_PlayerStats
+#    LogFilter_Damage
+#    LogFilter_Combat
+#    LogFilter_SpellCast
 #        Log filters (disabled by default, mostly debug only output affected cases)
 #        Default: 0 - include in log if log level permit
 #                 1 - not include with any log level
@@ -683,6 +686,12 @@ LogColors = ""
 #        Default: 1 (true)
 #                 0 (false)
 #
+#    WaitAtStartupError
+#        After startup error report wait <Enter> or some time before continue (and possible close console window)
+#                 -1 (wait until <Enter> press)
+#        Default:  0 (not wait)
+#                  N (>0, wait N secs)
+#
 #    Motd
 #        Message of the Day. Displayed at worldlogin for every user ('@' for a newline).
 #
@@ -747,6 +756,7 @@ OffhandCheckAtTalentsReset = 0
 ClientCacheVersion = 0
 Event.Announce = 0
 BeepAtStart = 1
+WaitAtStartupError = 0
 Motd = "Welcome to the Massive Network Game Object Server."
 
 ###################################################################################################################
@@ -1509,32 +1519,6 @@ SOAP.IP = 127.0.0.1
 SOAP.Port = 7878
 
 ###################################################################################################################
-#    CharDelete.Method
-#        Character deletion behavior
-#        Default: 0  - Completely remove the character from the database
-#                 1  - Unlinking, the character gets unlinked from the account,
-#                      the name gets freed up and appears as deleted ingame
-#
-#    CharDelete.MinLevel
-#        Character gets deleted by CharDelete.Method=0 when the character
-#        hasn't the specified level yet.
-#        Default: 0  - For all characters the specified mode will be used
-#                 1+ - Only for players which have reached the specified level
-#                      will be deleted by the specified mode.
-#                      the rest will be deleted by CharDelete.Method=0
-#
-#    CharDelete.KeepDays
-#        Define the amount of days for which the characters are kept in the database before
-#        they will be removed
-#        Default: 30
-#                 0  - Don't delete any characters, they stay in the database forever.
-#
-###################################################################################################################
-
-CharDelete.Method = 0
-CharDelete.MinLevel = 0
-CharDelete.KeepDays = 30
-###################################################################################################################
 # MOVEMENT ANTICHEAT
 #
 #    Anticheat.Movement.Enable
@@ -1565,6 +1549,38 @@ CharDelete.KeepDays = 30
 #                 2 - Ban IP
 #                 3 - Ban Account + IP
 #
+#    Anticheat.Movement.Announce
+#        Enable Announce cheater
+#        Default: 0 - off
+#                 1 - on
+#
+#    Anticheat.Movement.DetectSpeedHack
+#        Turn Speed Check on/off
+#        Default: 1 (on)
+#
+#    Anticheat.Movement.DetectWaterWalk
+#        Turn WaterWalk Check on/off
+#        Default: 1 (on)
+#
+#    Anticheat.Movement.DetectFlyHack
+#        Turn Fly Hack Check on/off
+#        Default: 1 (on)
+#
+#    Anticheat.Movement.DetectMountainHack
+#        Turn Speed Check on/off
+#        Default: 1 (on)
+#    Anticheat.Movement.DetectAirJumpHack
+#        Turn Air/Graviti Jump Check on/off
+#        Default: 1 (on)
+#
+#    Anticheat.Movement.DetectTeleportHack
+#        Turn Teleport Check on/off
+#        Default: 1 (on)
+#
+#    Anticheat.Movement.DetectTeleport2PlaneHack
+#        Turn Teleport2Plane Check on/off
+#        Default: 1 (on)
+#
 #    Anticheat.Movement.BanTime
 #        How long the ban should last.
 #        Default: 1 Minute - 1m
@@ -1588,8 +1604,43 @@ Anticheat.Movement.AlarmCount = 5
 Anticheat.Movement.AlarmTime = 5000
 Anticheat.Movement.Kill = 0
 Anticheat.Movement.Kick = 0
+Anticheat.Movement.Announce = 0
+Anticheat.Movement.DetectSpeedHack = 1
+Anticheat.Movement.DetectWaterWalk = 1
+Anticheat.Movement.DetectFlyHack = 1
+Anticheat.Movement.DetectMountainHack = 1
+Anticheat.Movement.DetectAirJumpHack = 1
+Anticheat.Movement.DetectTeleportHack = 1
+Anticheat.Movement.DetectTeleport2PlaneHack = 0
 Anticheat.Movement.BanType = 0
 Anticheat.Movement.BanTime = "1m"
 Anticheat.Movement.MaxXYT = 0.04
 Anticheat.Movement.IgnoreSecAfterTeleport = 10
 Anticheat.Movement.GmLevel = 0
+
+###################################################################################################################
+#    CharDelete.Method
+#        Character deletion behavior
+#        Default: 0  - Completely remove the character from the database
+#                 1  - Unlinking, the character gets unlinked from the account,
+#                      the name gets freed up and appears as deleted ingame
+#
+#    CharDelete.MinLevel
+#        Character gets deleted by CharDelete.Method=0 when the character
+#        hasn't the specified level yet.
+#        Default: 0  - For all characters the specified mode will be used
+#                 1+ - Only for players which have reached the specified level
+#                      will be deleted by the specified mode.
+#                      the rest will be deleted by CharDelete.Method=0
+#
+#    CharDelete.KeepDays
+#        Define the amount of days for which the characters are kept in the database before
+#        they will be removed
+#        Default: 30
+#                 0  - Don't delete any characters, they stay in the database forever.
+#
+###################################################################################################################
+
+CharDelete.Method = 0
+CharDelete.MinLevel = 0
+CharDelete.KeepDays = 30

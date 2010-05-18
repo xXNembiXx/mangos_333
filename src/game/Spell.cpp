@@ -2905,24 +2905,6 @@ void Spell::cast(bool skipCheck)
                 AddPrecastSpell(25771);                     // Forbearance
                 AddPrecastSpell(61987);                     // Avenging Wrath Marker
             }
-            // Hand of Protection 
-            else if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x0000000000000080)) 
-            { 
-                AddPrecastSpell(25771);                     // Forbearance 
-                if (m_targets.getUnitTarget() && m_targets.getUnitTarget() == m_caster) 
-                    AddPrecastSpell(61987);                 // Avenging Wrath Marker 
-            }
-            else if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x200000000000))
-                AddPrecastSpell(61987);                     // Avenging Wrath Marker
-            // Lay on Hands
-            else if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x000000008000))
-            {
-                if (m_targets.getUnitTarget() && m_targets.getUnitTarget() == m_caster)
-                {
-                    AddPrecastSpell(25771);                 // Forbearance
-                    AddPrecastSpell(61987);                 // Avenging Wrath Marker
-                }
-            }
             break;
         }
         case SPELLFAMILY_SHAMAN:

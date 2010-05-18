@@ -5140,16 +5140,6 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 }
                 break;
             }
-            case SPELLFAMILY_DEATHKNIGHT:
-            {
-                // Frost Fever and Blood Plague damage calculation
-                if(GetSpellProto()->SpellFamilyFlags2 & 0x2)
-                {
-                    m_modifier.m_amount += int32(caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.08525 /* orginally* 0.055 * 1.55*/);
-                    return;
-                }
-                break;
-            }
             default:
                 break;
         }

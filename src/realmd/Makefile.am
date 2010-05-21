@@ -23,14 +23,11 @@ AM_CPPFLAGS = $(MANGOS_INCLUDES) -I$(top_builddir)/src/shared -I$(srcdir)/../../
 bin_PROGRAMS = mangos-realmd
 mangos_realmd_SOURCES = \
 	AuthCodes.h \
+	AuthSocket.cpp \
+	AuthSocket.h \
 	Main.cpp \
 	RealmList.cpp \
-	RealmList.h \
-	RealmSocket.h \
-	RealmSocket.cpp \
-	AuthSession.h \
-	AuthSession.cpp \
-	RealmAcceptor.h
+	RealmList.h
 
 ## Link realm list daemon against the shared library
 mangos_realmd_LDADD = \

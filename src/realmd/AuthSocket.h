@@ -20,28 +20,31 @@
 /// @{
 /// \file
 
-#ifndef _AUTHSESSION_H
-#define _AUTHSESSION_H
+#ifndef _AUTHSOCKET_H
+#define _AUTHSOCKET_H
 
 #include "Common.h"
 #include "Auth/BigNumber.h"
+#include "sockets/TcpSocket.h"
+#include "sockets/SocketHandler.h"
+#include "sockets/ListenSocket.h"
+#include "sockets/Utility.h"
+#include "sockets/Parse.h"
+#include "sockets/Socket.h"
 #include "Auth/Sha1.h"
 #include "ByteBuffer.h"
 
-#include "RealmSocket.h"
-
-class AuthSession: public RealmSocket::Session
+/// Handle login commands
+class AuthSocket: public TcpSocket
 {
     public:
         const static int s_BYTE_SIZE = 32;
 
-        AuthSession(RealmSocket& socket);
-        virtual ~AuthSession(void);
+        AuthSocket(ISocketHandler& h);
+        ~AuthSocket();
 
-        virtual void OnRead(void);
-        virtual void OnAccept(void);
-        virtual void OnClose(void);
-
+        void OnAccept();
+        void OnRead();
         void SendProof(Sha1Hash sha);
         void LoadRealmlist(ByteBuffer &pkt, uint32 acctid);
 
@@ -58,9 +61,11 @@ class AuthSession: public RealmSocket::Session
 
         void _SetVSFields(const std::string& rI);
 
+        FILE *pPatch;
+        ACE_Thread_Mutex patcherLock;
+        bool IsLag();
+
     private:
-        RealmSocket& socket_;
-        RealmSocket& socket(void) { return socket_; }
 
         BigNumber N, s, g, v;
         BigNumber b, B;

@@ -65,7 +65,7 @@ class SQLStorage
 
         char const* GetTableName() const { return table; }
 
-        void Load();
+        void Load(bool silent = false);
         void Free();
 
         void EraseEntry(uint32 id);
@@ -94,7 +94,7 @@ template <class T>
 struct SQLStorageLoaderBase
 {
     public:
-        void Load(SQLStorage &storage);
+        void Load(SQLStorage &storage, bool silent = false);
 
         template<class S, class D>
             void convert(uint32 field_pos, S src, D &dst);

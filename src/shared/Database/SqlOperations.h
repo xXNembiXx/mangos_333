@@ -22,6 +22,7 @@
 #include "Common.h"
 
 #include "ace/Thread_Mutex.h"
+#include "ace/Method_Request.h"
 #include "LockedQueue.h"
 #include <queue>
 #include "Utilities/Callback.h"
@@ -117,4 +118,25 @@ class SqlQueryHolderEx : public SqlOperation
             : m_holder(holder), m_callback(callback), m_queue(queue) {}
         void Execute(Database *db);
 };
+
+class SqlAsyncTask : public ACE_Method_Request
+{
+public:
+    SqlAsyncTask(Database * db, SqlOperation * op) : m_db(db), m_op(op) {}
+    ~SqlAsyncTask() { if(!m_op) return; delete m_op; }
+
+    int call()
+    {
+        if(this == NULL || !m_db || !m_op)
+            return -1;
+
+        m_op->Execute(m_db);
+        return 0;
+    }
+
+private:
+    Database * m_db;
+    SqlOperation * m_op;
+};
+
 #endif                                                      //__SQLOPERATIONS_H

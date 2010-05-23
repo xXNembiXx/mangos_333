@@ -393,7 +393,7 @@ bool DatabaseMysql::CommitTransaction()
     if (i != m_tranQueues.end() && i->second != NULL)
     {
         m_threadBody->Delay(i->second);
-        i->second = NULL;
+		m_tranQueues.erase(i);
         return true;
     }
     else
@@ -422,6 +422,7 @@ bool DatabaseMysql::RollbackTransaction()
     {
         delete i->second;
         i->second = NULL;
+		m_tranQueues.erase(i);
     }
     return true;
 }

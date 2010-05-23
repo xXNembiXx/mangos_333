@@ -31,27 +31,33 @@ void SqlStatement::Execute(Database *db)
 
 void SqlTransaction::Execute(Database *db)
 {
-    if(m_queue.empty())
-        return;
-    db->DirectExecute("START TRANSACTION");
-    while(!m_queue.empty())
-    {
-        char *sql = const_cast<char*>(m_queue.front());
-        m_queue.pop();
+    const char* sql;
 
+    if (m_queue.empty())
+        return;
+		
+    db->DirectExecute("START TRANSACTION");
+    while (!m_queue.empty())
+    {
+        sql = m_queue.peek();
+        m_queue.unlock();
         if(!db->DirectExecute(sql))
         {
             delete [] sql;
+            m_queue.pop_front();
             db->DirectExecute("ROLLBACK");
-            while(!m_queue.empty())
+            while (!m_queue.empty())
             {
-                delete [] (const_cast<char*>(m_queue.front()));
-                m_queue.pop();
+                sql = m_queue.peek();
+                m_queue.unlock();
+                delete [] (const_cast<char*>(sql));
+                m_queue.pop_front();
             }
             return;
         }
 
         delete [] sql;
+        m_queue.pop_front();
     }
     db->DirectExecute("COMMIT");
 }

@@ -54,12 +54,11 @@ class SqlStatement : public SqlOperation
 
 class SqlTransaction : public SqlOperation
 {
-        typedef ACE_Based::LockedQueue<const char *, ACE_Thread_Mutex> LockedQueue;
     private:
-        LockedQueue m_queue;
+        std::queue<const char *> m_queue;
     public:
         SqlTransaction() {}
-        void DelayExecute(const char *sql) { m_queue.add(mangos_strdup(sql)); }
+        void DelayExecute(const char *sql) { m_queue.push(mangos_strdup(sql)); }
         void Execute(Database *db);
 };
 
@@ -123,15 +122,8 @@ class SqlQueryHolderEx : public SqlOperation
 class SqlAsyncTask : public ACE_Method_Request
 {
 public:
-    SqlAsyncTask(Database * db, SqlOperation * op) : m_db(db), m_op(op){}
-    ~SqlAsyncTask()
-    { 
-        if (!m_op)
-            return; 
-
-        delete m_op;
-        m_op = NULL;
-    }
+    SqlAsyncTask(Database * db, SqlOperation * op) : m_db(db), m_op(op) {}
+    ~SqlAsyncTask() { if(!m_op) return; delete m_op; }
 
     int call()
     {

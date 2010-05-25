@@ -121,20 +121,6 @@ namespace ACE_Based
             {
                 this->_lock.release();
             }
-			
-            ///! Calls pop_front of the queue
-            void pop_front()
-            {
-                ACE_GUARD (LockType, g, this->_lock);
-                _queue.pop_front();
-            }
-
-            ///! Checks if we're empty or not with locks held
-            bool empty()
-            {
-                ACE_GUARD_RETURN (LockType, g, this->_lock, false);
-                return _queue.empty();
-            }
     };
 }
 #endif

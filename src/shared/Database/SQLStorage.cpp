@@ -93,8 +93,8 @@ void SQLStorage::Free ()
     delete [] data;
 }
 
-void SQLStorage::Load(bool silent)
+void SQLStorage::Load()
 {
     SQLStorageLoader loader;
-    loader.Load(*this, silent);
+    loader.Load(*this);
 }

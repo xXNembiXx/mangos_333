@@ -23,6 +23,7 @@
 #ifndef __WORLD_H
 #define __WORLD_H
 
+#include <omp.h>
 #include "Common.h"
 #include "Timer.h"
 #include "Policies/Singleton.h"
@@ -183,6 +184,7 @@ enum eConfigUInt32Values
     CONFIG_UINT32_CHARDELETE_METHOD,
     CONFIG_UINT32_CHARDELETE_MIN_LEVEL,
     CONFIG_UINT32_RANDOM_BG_RESET_HOUR,
+	CONFIG_UINT32_NUMTHREADS,
     CONFIG_UINT32_VALUE_COUNT
 };
 

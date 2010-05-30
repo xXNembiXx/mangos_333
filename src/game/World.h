@@ -186,6 +186,8 @@ enum eConfigUInt32Values
     CONFIG_UINT32_RANDOM_BG_RESET_HOUR,
 	CONFIG_UINT32_EXTERNAL_MAIL,
 	CONFIG_UINT32_EXTERNAL_MAIL_INTERVAL,
+    CONFIG_UINT32_LOSERNOCHANGE,
+    CONFIG_UINT32_LOSERHALFCHANGE,
     CONFIG_UINT32_VALUE_COUNT
 };
 
@@ -665,6 +667,7 @@ class World
         IntervalTimer m_timers[WUPDATE_COUNT];
         uint32 mail_timer;
         uint32 mail_timer_expires;
+        uint32 world_diff_time;
 
         typedef UNORDERED_MAP<uint32, Weather*> WeatherMap;
         WeatherMap m_weathers;

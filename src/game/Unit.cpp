@@ -6682,7 +6682,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 // Seal of Vengeance (damage calc on apply aura)
                 case 31801:
                 {
-                    if (effIndex != EFFECT_INDEX_0 || !(procFlag & PROC_FLAG_SUCCESSFUL_MELEE_HIT))         // effect 1,2 used by seal unleashing code
+                    if (effIndex != EFFECT_INDEX_0)         // effect 1,2 used by seal unleashing code
                         return false;
 
                     // At melee attack or Hammer of the Righteous spell damage considered as melee attack

@@ -44,7 +44,8 @@ void SqlDelayThread::run()
         SqlOperation* s;
         while (m_sqlQueue.next(s))
         {
-            s->Execute(m_dbEngine);
+            if (!s) continue;
+		    s->Execute(m_dbEngine);
             delete s;
         }
         if((loopCounter++) >= pingEveryLoop)

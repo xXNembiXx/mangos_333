@@ -2949,6 +2949,9 @@ void Spell::cast(bool skipCheck)
             // Fingers of Frost
             else if (m_spellInfo->Id == 44544)
                 AddPrecastSpell(74396);
+			// Mirror Image (glyph)
+			else if (m_spellInfo->Id == 55342 && m_caster->HasAura(63093))
+				AddPrecastSpell(65047); //summon one more
             break;
         }
         case SPELLFAMILY_PRIEST:

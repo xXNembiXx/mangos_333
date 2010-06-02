@@ -2068,6 +2068,22 @@ void Player::Regenerate(Powers power, uint32 diff)
                             cd_diff = cd_diff * ((*i)->GetModifier()->m_amount + 100) / 100;
 
                     SetRuneCooldown(rune, (cd < cd_diff) ? 0 : cd - cd_diff);
+
+                    // check if we don't have cooldown, need convert and that our rune wasn't already converted
+                    if (cd < cd_diff && m_runes->IsRuneNeedsConvert(rune) && GetBaseRune(rune) == GetCurrentRune(rune))
+                    {
+                        // currently all delayed rune converts happen with rune death
+                        // ConvertedBy was initialized at proc
+                        ConvertRune(rune, RUNE_DEATH);
+                        SetNeedConvertRune(rune, false);
+                    }
+                }
+                else if (m_runes->IsRuneNeedsConvert(rune) && GetBaseRune(rune) == GetCurrentRune(rune))
+                {
+                    // currently all delayed rune converts happen with rune death
+                    // ConvertedBy was initialized at proc
+                    ConvertRune(rune, RUNE_DEATH);
+                    SetNeedConvertRune(rune, false);
                 }
             }
         }   break;
@@ -19286,7 +19302,7 @@ inline void UpdateVisibilityOf_helper(ObjectGuidSet& s64, GameObject* target)
 }
 
 template<class T>
-void Player::UpdateVisibilityOf(WorldObject const* viewPoint, T* target, UpdateData& data, UpdateDataMapType& /*data_updates*/, std::set<WorldObject*>& visibleNow)
+void Player::UpdateVisibilityOf(WorldObject const* viewPoint, T* target, UpdateData& data, std::set<WorldObject*>& visibleNow)
 {
     if(HaveAtClient(target))
     {
@@ -19315,11 +19331,11 @@ void Player::UpdateVisibilityOf(WorldObject const* viewPoint, T* target, UpdateD
     }
 }
 
-template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, Player*        target, UpdateData& data, UpdateDataMapType& data_updates, std::set<WorldObject*>& visibleNow);
-template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, Creature*      target, UpdateData& data, UpdateDataMapType& data_updates, std::set<WorldObject*>& visibleNow);
-template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, Corpse*        target, UpdateData& data, UpdateDataMapType& data_updates, std::set<WorldObject*>& visibleNow);
-template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, GameObject*    target, UpdateData& data, UpdateDataMapType& data_updates, std::set<WorldObject*>& visibleNow);
-template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, DynamicObject* target, UpdateData& data, UpdateDataMapType& data_updates, std::set<WorldObject*>& visibleNow);
+template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, Player*        target, UpdateData& data, std::set<WorldObject*>& visibleNow);
+template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, Creature*      target, UpdateData& data, std::set<WorldObject*>& visibleNow);
+template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, Corpse*        target, UpdateData& data, std::set<WorldObject*>& visibleNow);
+template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, GameObject*    target, UpdateData& data, std::set<WorldObject*>& visibleNow);
+template void Player::UpdateVisibilityOf(WorldObject const* viewPoint, DynamicObject* target, UpdateData& data, std::set<WorldObject*>& visibleNow);
 
 void Player::InitPrimaryProfessions()
 {
@@ -20206,13 +20222,13 @@ bool Player::isHonorOrXPTarget(Unit* pVictim) const
     return true;
 }
 
-bool Player::RewardSinglePlayerAtKill(Unit* pVictim)
+void Player::RewardSinglePlayerAtKill(Unit* pVictim)
 {
     bool PvP = pVictim->isCharmedOwnedByPlayerOrPlayer();
     uint32 xp = PvP ? 0 : MaNGOS::XP::Gain(this, pVictim);
 
     // honor can be in PvP and !PvP (racial leader) cases
-    bool honored_kill = RewardHonor(pVictim,1);
+    RewardHonor(pVictim,1);
 
     // xp and reputation only in !PvP case
     if(!PvP)
@@ -20227,8 +20243,6 @@ bool Player::RewardSinglePlayerAtKill(Unit* pVictim)
         if(pVictim->GetTypeId()==TYPEID_UNIT)
             KilledMonster(((Creature*)pVictim)->GetCreatureInfo(), pVictim->GetObjectGuid());
     }
-
-    return xp || honored_kill;
 }
 
 void Player::RewardPlayerAndGroupAtEvent(uint32 creature_id, WorldObject* pRewardSource)
@@ -20833,9 +20847,12 @@ void Player::SetTitle(CharTitlesEntry const* title, bool lost)
     GetSession()->SendPacket(&data);
 }
 
-void Player::ConvertRune(uint8 index, RuneType newType)
+void Player::ConvertRune(uint8 index, RuneType newType, uint32 spellid)
 {
     SetCurrentRune(index, newType);
+
+    if (spellid != 0)
+        SetConvertedBy(index, spellid);
 
     WorldPacket data(SMSG_CONVERT_RUNE, 2);
     data << uint8(index);
@@ -20878,12 +20895,14 @@ void Player::InitRunes()
     m_runes = new Runes;
 
     m_runes->runeState = 0;
+    m_runes->needConvert = 0;
 
     for(uint32 i = 0; i < MAX_RUNES; ++i)
     {
         SetBaseRune(i, runeSlotTypes[i]);                   // init base types
         SetCurrentRune(i, runeSlotTypes[i]);                // init current types
         SetRuneCooldown(i, 0);                              // reset cooldowns
+        SetConvertedBy(i, 0);                               // init spellid
         m_runes->SetRuneState(i);
     }
 

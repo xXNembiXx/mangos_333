@@ -11585,7 +11585,7 @@ bool Unit::isVisibleForOrDetect(Unit const* u, WorldObject const* viewPoint, boo
     }
 
     // Arena preparation hack
-    if(HasAura(SPELL_ARENA_PREPARATION))
+    if (HasAura(SPELL_ARENA_PREPARATION) && IsHostileTo(u))
         invisible = true;
 		
     // Buff in DK starting location provides invisibility for each faction players

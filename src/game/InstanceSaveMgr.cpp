@@ -241,7 +241,7 @@ void InstanceResetScheduler::LoadResetTimes()
         {
             // initialize the reset time
             t = today + period + diff;
-            CharacterDatabase.DirectPExecute("INSERT INTO instance_reset VALUES ('%u','%u','"UI64FMTD"')", mapid, difficulty, (uint64)t);
+            CharacterDatabase.DirectPExecute("REPLACE INTO instance_reset VALUES ('%u','%u','"UI64FMTD"')", mapid, difficulty, (uint64)t);
         }
 
         if(t < now)

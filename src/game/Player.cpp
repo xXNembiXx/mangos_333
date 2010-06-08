@@ -16577,7 +16577,7 @@ InstancePlayerBind* Player::BindToInstance(InstanceSave *save, bool permanent, b
                 if(!load) CharacterDatabase.PExecute("UPDATE character_instance SET instance = '%u', permanent = '%u' WHERE guid = '%u' AND instance = '%u'", save->GetInstanceId(), permanent, GetGUIDLow(), bind.save->GetInstanceId());
         }
         else
-            if(!load) CharacterDatabase.PExecute("INSERT INTO character_instance (guid, instance, permanent) VALUES ('%u', '%u', '%u')", GetGUIDLow(), save->GetInstanceId(), permanent);
+            if(!load) CharacterDatabase.PExecute("REPLACE INTO character_instance (guid, instance, permanent) VALUES ('%u', '%u', '%u')", GetGUIDLow(), save->GetInstanceId(), permanent);
 
         if(bind.save != save)
         {
@@ -16705,7 +16705,7 @@ void Player::ConvertInstancesToGroup(Player *player, Group *group, uint64 player
 
     // if the player's not online we don't know what binds it has
     if(!player || !group || has_binds)
-        CharacterDatabase.PExecute("INSERT INTO group_instance SELECT guid, instance, permanent FROM character_instance WHERE guid = '%u'", GUID_LOPART(player_guid));
+        CharacterDatabase.PExecute("REPLACE INTO group_instance SELECT guid, instance, permanent FROM character_instance WHERE guid = '%u'", GUID_LOPART(player_guid));
 
     // the following should not get executed when changing leaders
     if(!player || has_solo)

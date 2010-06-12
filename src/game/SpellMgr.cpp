@@ -63,9 +63,19 @@ int32 GetSpellMaxDuration(SpellEntry const *spellInfo)
 
 uint32 GetSpellCastTime(SpellEntry const* spellInfo, Spell const* spell)
 {
-    // some triggered spells have data only usable for client
-    if (spell && spell->IsTriggeredSpellWithRedundentData())
-        return 0;
+    if (spell)
+    {
+        // some triggered spells have data only usable for client
+        if (spell->IsTriggeredSpellWithRedundentData())
+            return 0;
+
+        // spell targeted to non-trading trade slot item instant at trade success apply
+        if (spell->GetCaster()->GetTypeId()==TYPEID_PLAYER)
+            if (TradeData* my_trade = ((Player*)(spell->GetCaster()))->GetTradeData())
+                if (Item* nonTrade = my_trade->GetTraderData()->GetItem(TRADE_SLOT_NONTRADED))
+                    if (nonTrade == spell->m_targets.getItemTarget())
+                        return 0;
+    }
 
     SpellCastTimesEntry const *spellCastTimeEntry = sSpellCastTimesStore.LookupEntry(spellInfo->CastingTimeIndex);
 
@@ -449,7 +459,7 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
     }
 
     // Tracking spells
-    if(IsSpellHaveAura(spellInfo, SPELL_AURA_TRACK_CREATURES) || IsSpellHaveAura(spellInfo, SPELL_AURA_TRACK_RESOURCES))
+    if(IsSpellHaveAura(spellInfo, SPELL_AURA_TRACK_CREATURES) || IsSpellHaveAura(spellInfo, SPELL_AURA_TRACK_RESOURCES) || IsSpellHaveAura(spellInfo, SPELL_AURA_TRACK_STEALTHED))
         return SPELL_TRACKER;
 
     // elixirs can have different families, but potion most ofc.

@@ -10339,7 +10339,7 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask)
 
     AuraList const& mHealingDone = GetAurasByType(SPELL_AURA_MOD_HEALING_DONE);
     for(AuraList::const_iterator i = mHealingDone.begin();i != mHealingDone.end(); ++i)
-        if(((*i)->GetModifier()->m_miscvalue & schoolMask) != 0)
+        if(!(*i)->GetModifier()->m_miscvalue || ((*i)->GetModifier()->m_miscvalue & schoolMask) != 0)
             AdvertisedBenefit += (*i)->GetModifier()->m_amount;
 
     // Healing bonus of spirit, intellect and strength
@@ -13431,7 +13431,7 @@ void Unit::SetFeared(bool apply, uint64 const& casterGUID, uint32 spellID, uint3
     {
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
 
-        GetMotionMaster()->MovementExpired(false);
+        GetMotionMaster()->Clear(false);
 
         if( GetTypeId() != TYPEID_PLAYER && isAlive() )
         {
@@ -13466,7 +13466,7 @@ void Unit::SetConfused(bool apply, uint64 const& casterGUID, uint32 spellID)
     {
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
 
-        GetMotionMaster()->MovementExpired(false);
+        GetMotionMaster()->Clear(false);
 
         if (GetTypeId() != TYPEID_PLAYER && isAlive())
         {

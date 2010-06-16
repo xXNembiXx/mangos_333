@@ -38,8 +38,8 @@ class LinkedListElement
         LinkedListElement()  { iNext = NULL; iPrev = NULL; }
         ~LinkedListElement() { delink(); }
 
-        bool hasNext() const  { return (iNext->iNext != NULL); }
-        bool hasPrev() const  { return (iPrev->iPrev != NULL); }
+        bool hasNext() const  { return (iNext != NULL && iNext->iNext != NULL); }
+        bool hasPrev() const  { return (iPrev != NULL && iPrev->iPrev != NULL); }
         bool isInList() const { return (iNext != NULL && iPrev != NULL); }
 
         LinkedListElement      * next()       { return hasNext() ? iNext : NULL; }
@@ -101,7 +101,7 @@ class LinkedListHead
             iSize = 0;
         }
 
-        bool isEmpty() const { if (iFirst.iNext) return (!iFirst.iNext->isInList()); }
+        bool isEmpty() const { if (iFirst.iNext) return (!iFirst.iNext->isInList()); return true; }
 
         LinkedListElement      * getFirst()       { return (isEmpty() ? NULL : iFirst.iNext); }
         LinkedListElement const* getFirst() const { return (isEmpty() ? NULL : iFirst.iNext); }

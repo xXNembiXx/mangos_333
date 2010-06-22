@@ -2573,7 +2573,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             }
             case 32286:                                     // Focus Target Visual
             {
-                if (m_removeMode == AURA_REMOVE_BY_DEFAULT)
+                if (m_removeMode == AURA_REMOVE_BY_EXPIRE)
                     target->CastSpell(target, 32301, true, NULL, this);
 
                 return;
@@ -2610,7 +2610,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             {
                 if (Unit* pCaster = GetCaster())
                 {
-                    if (m_removeMode == AURA_REMOVE_BY_DEFAULT)
+                    if (m_removeMode == AURA_REMOVE_BY_EXPIRE)
                         pCaster->CastSpell(target, 51872, true, NULL, this);
                 }
 
@@ -5017,7 +5017,7 @@ void Aura::HandlePeriodicTriggerSpell(bool apply, bool /*Real*/)
 
                 return;
             case 42783:                                     //Wrath of the Astrom...
-                if (m_removeMode == AURA_REMOVE_BY_DEFAULT && GetEffIndex() + 1 < MAX_EFFECT_INDEX)
+                if (m_removeMode == AURA_REMOVE_BY_EXPIRE && GetEffIndex() + 1 < MAX_EFFECT_INDEX)
                     target->CastSpell(target, GetSpellProto()->CalculateSimpleValue(SpellEffectIndex(GetEffIndex()+1)), true);
                 return;
             case 51912:                                     // Ultra-Advanced Proto-Typical Shortening Blaster
@@ -5246,16 +5246,6 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                     if (spellProto->CalculateSimpleValue(EFFECT_INDEX_1) !=0 &&
                         target->GetHealth() > target->GetMaxHealth() * spellProto->CalculateSimpleValue(EFFECT_INDEX_1) / 100)
                         m_modifier.m_amount += m_modifier.m_amount * spellProto->CalculateSimpleValue(EFFECT_INDEX_2) / 100;
-                }
-                break;
-            }
-            case SPELLFAMILY_WARLOCK:
-            {
-                // Drain Soul
-                if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000000004000))
-                {
-                    if (target->GetHealth() * 100 / target->GetMaxHealth() <= 25)
-                        m_modifier.m_amount *= 4;
                 }
                 break;
             }

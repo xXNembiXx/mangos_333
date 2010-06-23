@@ -8,7 +8,7 @@ INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `Spell
 
 /*Item - Paladin T10 Holy 4P Bonus*/
 DELETE FROM `spell_proc_event` WHERE entry = 70756;
-INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES('70756','0','10',0x00200000,'0','0',0x00004000,'0','0','0','0');
+INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES ('70756','2','10','2097152','0','0','16384','0','0','0','0');
 
 /*Item - Hunter T10 2P Bonus*/
 DELETE FROM `spell_proc_event` WHERE entry = 70727;

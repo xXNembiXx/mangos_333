@@ -1532,6 +1532,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                 case 65121:                                 // XT002's Light Bomb (h)
                 case 63024:                                 // XT002's Gravitiy Bomb
                 case 64234:                                 // XT002's Gravitiy Bomb (h)
+				case 62488:                                 // Activate Construct
                     unMaxTargets = 1;
                     break;
                 case 28542:                                 // Life Drain
@@ -6466,7 +6467,7 @@ bool Spell::CheckTarget( Unit* target, SpellEffectIndex eff )
 
     // Check targets for not_selectable unit flag and remove
     // A player can cast spells on his pet (or other controlled unit) though in any state
-    if (target != m_caster && target->GetCharmerOrOwnerGUID() != m_caster->GetGUID())
+    if (target != m_caster && target->GetCharmerOrOwnerGUID() != m_caster->GetGUID() && m_spellInfo->Id != 62488) // Exclude Activate Construct
     {
         // any unattackable target skipped
         if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))

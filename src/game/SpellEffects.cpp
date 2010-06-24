@@ -2680,6 +2680,10 @@ void Spell::EffectForceCast(SpellEffectIndex eff_idx)
     if( !unitTarget )
         return;
 
+    // Heat
+    if (m_spellInfo->Id == 62343 && (unitTarget->HasAura(62373) || unitTarget->HasAura(62382)))
+        return;
+
     uint32 triggered_spell_id = m_spellInfo->EffectTriggerSpell[eff_idx];
 
     // normal case

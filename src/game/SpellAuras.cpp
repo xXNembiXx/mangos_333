@@ -5118,6 +5118,27 @@ void Aura::HandleAuraPeriodicDummy(bool apply, bool Real)
     SpellEntry const*spell = GetSpellProto();
     switch( spell->SpellFamilyName)
     {
+        case SPELLFAMILY_GENERIC:
+        {
+            switch(spell->Id)
+            {
+                // Slag Pot (Normal)
+                case 62717:
+                {
+                    if (!apply && m_removeMode == AURA_REMOVE_BY_DEFAULT)
+                        m_target->CastSpell(m_target, 62836, true, NULL, this);
+                    break;
+                }
+                // Slag Pot (Heroic)
+                case 63477:
+                {
+                    if (!apply && m_removeMode == AURA_REMOVE_BY_DEFAULT)
+                        m_target->CastSpell(m_target, 63536, true, NULL, this);
+                    break;
+                }
+            }
+            break;
+        }
         case SPELLFAMILY_ROGUE:
         {
             if(!apply)

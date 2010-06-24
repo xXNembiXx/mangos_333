@@ -1698,71 +1698,82 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
     switch(spellInfo_1->SpellFamilyName)
     {
         case SPELLFAMILY_GENERIC:
-            if (spellInfo_2->SpellFamilyName == SPELLFAMILY_GENERIC)
-            {
-                // Dark Essence & Light Essence
-                if ((spellInfo_1->Id == 65684 && spellInfo_2->Id == 65686) ||
-                    (spellInfo_2->Id == 65684 && spellInfo_1->Id == 65686))
-                    return true;
+			switch(spellInfo_2->SpellFamilyName)
+			{
+				case SPELLFAMILY_GENERIC:
+				{
+					// Dark Essence & Light Essence
+					if ((spellInfo_1->Id == 65684 && spellInfo_2->Id == 65686) ||
+						(spellInfo_2->Id == 65684 && spellInfo_1->Id == 65686))
+						return true;
 
-                //Potent Fungus and Mini must remove each other (Amanitar encounter, Ahn'kahet)
-                if ((spellInfo_1->Id == 57055 && spellInfo_2->Id == 56648) ||
-                    (spellInfo_2->Id == 57055 && spellInfo_1->Id == 56648))
-                    return true;
+					//Potent Fungus and Mini must remove each other (Amanitar encounter, Ahn'kahet)
+					if ((spellInfo_1->Id == 57055 && spellInfo_2->Id == 56648) ||
+						(spellInfo_2->Id == 57055 && spellInfo_1->Id == 56648))
+						return true;
 
-                // Thunderfury
-                if ((spellInfo_1->Id == 21992 && spellInfo_2->Id == 27648) ||
-                    (spellInfo_2->Id == 21992 && spellInfo_1->Id == 27648))
-                    return false;
+					// Thunderfury
+					if ((spellInfo_1->Id == 21992 && spellInfo_2->Id == 27648) ||
+						(spellInfo_2->Id == 21992 && spellInfo_1->Id == 27648))
+						return false;
 
-                // Lightning Speed (Mongoose) and Fury of the Crashing Waves (Tsunami Talisman)
-                if ((spellInfo_1->Id == 28093 && spellInfo_2->Id == 42084) ||
-                    (spellInfo_2->Id == 28093 && spellInfo_1->Id == 42084))
-                    return false;
+					// Lightning Speed (Mongoose) and Fury of the Crashing Waves (Tsunami Talisman)
+					if ((spellInfo_1->Id == 28093 && spellInfo_2->Id == 42084) ||
+						(spellInfo_2->Id == 28093 && spellInfo_1->Id == 42084))
+						return false;
 
-                // Soulstone Resurrection and Twisting Nether (resurrector)
-                if( spellInfo_1->SpellIconID == 92 && spellInfo_2->SpellIconID == 92 && (
-                    spellInfo_1->SpellVisual[0] == 99 && spellInfo_2->SpellVisual[0] == 0 ||
-                    spellInfo_2->SpellVisual[0] == 99 && spellInfo_1->SpellVisual[0] == 0 ) )
-                    return false;
+					// Soulstone Resurrection and Twisting Nether (resurrector)
+					if( spellInfo_1->SpellIconID == 92 && spellInfo_2->SpellIconID == 92 && (
+						spellInfo_1->SpellVisual[0] == 99 && spellInfo_2->SpellVisual[0] == 0 ||
+						spellInfo_2->SpellVisual[0] == 99 && spellInfo_1->SpellVisual[0] == 0 ) )
+						return false;
 
-                // Heart of the Wild, Agility and various Idol Triggers
-                if(spellInfo_1->SpellIconID == 240 && spellInfo_2->SpellIconID == 240)
-                    return false;
+					// Heart of the Wild, Agility and various Idol Triggers
+					if(spellInfo_1->SpellIconID == 240 && spellInfo_2->SpellIconID == 240)
+						return false;
 
-                // Personalized Weather (thunder effect should overwrite rainy aura)
-                if(spellInfo_1->SpellIconID == 2606 && spellInfo_2->SpellIconID == 2606)
-                    return false;
+					// Personalized Weather (thunder effect should overwrite rainy aura)
+					if(spellInfo_1->SpellIconID == 2606 && spellInfo_2->SpellIconID == 2606)
+						return false;
 
-                // Brood Affliction: Bronze
-                if( (spellInfo_1->Id == 23170 && spellInfo_2->Id == 23171) ||
-                    (spellInfo_2->Id == 23170 && spellInfo_1->Id == 23171) )
-                    return false;
+					// Brood Affliction: Bronze
+					if( (spellInfo_1->Id == 23170 && spellInfo_2->Id == 23171) ||
+						(spellInfo_2->Id == 23170 && spellInfo_1->Id == 23171) )
+						return false;
 
-                // Cool Down (See PeriodicAuraTick())
-                if ((spellInfo_1->Id == 52441 && spellInfo_2->Id == 52443) ||
-                    (spellInfo_2->Id == 52441 && spellInfo_1->Id == 52443))
-                    return false;
+					// Cool Down (See PeriodicAuraTick())
+					if ((spellInfo_1->Id == 52441 && spellInfo_2->Id == 52443) ||
+						(spellInfo_2->Id == 52441 && spellInfo_1->Id == 52443))
+						return false;
 
-                // See Chapel Invisibility and See Noth Invisibility
-                if( (spellInfo_1->Id == 52950 && spellInfo_2->Id == 52707) ||
-                    (spellInfo_2->Id == 52950 && spellInfo_1->Id == 52707) )
-                    return false;
+					// See Chapel Invisibility and See Noth Invisibility
+					if( (spellInfo_1->Id == 52950 && spellInfo_2->Id == 52707) ||
+						(spellInfo_2->Id == 52950 && spellInfo_1->Id == 52707) )
+						return false;
 
-                // Regular and Night Elf Ghost
-                if( (spellInfo_1->Id == 8326 && spellInfo_2->Id == 20584) ||
-                    (spellInfo_2->Id == 8326 && spellInfo_1->Id == 20584) )
-                    return false;
+					// Regular and Night Elf Ghost
+					if( (spellInfo_1->Id == 8326 && spellInfo_2->Id == 20584) ||
+						(spellInfo_2->Id == 8326 && spellInfo_1->Id == 20584) )
+						return false;
 
-                // Kindred Spirits
-                if( spellInfo_1->SpellIconID == 3559 && spellInfo_2->SpellIconID == 3559 )
-                    return false;
+					// Kindred Spirits
+					if( spellInfo_1->SpellIconID == 3559 && spellInfo_2->SpellIconID == 3559 )
+						return false;
 
-				// Fury of Frostmourne
-				if( spellInfo_1->SpellIconID == 2702 && spellInfo_2->SpellIconID == 2702 || 
-					spellInfo_2->SpellIconID == 2702 && spellInfo_1->SpellIconID == 2702 )
-					return false;
-            }
+					// Fury of Frostmourne
+					if( spellInfo_1->SpellIconID == 2702 && spellInfo_2->SpellIconID == 2702 || 
+						spellInfo_2->SpellIconID == 2702 && spellInfo_1->SpellIconID == 2702 )
+						return false;
+					break;
+				}
+				case SPELLFAMILY_MAGE:
+				{
+					// Ignite and Molten
+					if (spellInfo_1->Id == 12654 && spellInfo_2->SpellIconID == 937)
+						return false;
+					break;
+				}
+			}
             // Dragonmaw Illusion, Blood Elf Illusion, Human Illusion, Illidari Agent Illusion, Scarlet Crusade Disguise
             if(spellInfo_1->SpellIconID == 1691 && spellInfo_2->SpellIconID == 1691)
                 return false;
@@ -1794,6 +1805,9 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                     (spellInfo_2->SpellFamilyFlags & UI64LIT(0x1)) && (spellInfo_1->SpellFamilyFlags & UI64LIT(0x400000)) )
                     return false;
             }
+			// Ignite and Molten
+			if (spellInfo_1->Id == 12654 && spellInfo_2->SpellIconID == 937)
+				return false;
             break;
         case SPELLFAMILY_WARLOCK:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_WARLOCK )

@@ -1844,12 +1844,49 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             break;
         case TARGET_AREAEFFECT_INSTANT:
         {
-            SpellTargets targetB = SPELL_TARGETS_AOE_DAMAGE;
-            // Select friendly targets for positive effect
-            if (IsPositiveEffect(m_spellInfo->Id, effIndex))
-                targetB = SPELL_TARGETS_FRIENDLY;
+            if (m_spellInfo->EffectImplicitTargetA[effIndex] == TARGET_CASTER_COORDINATES)
+            {
+                UnitList targets;
+                MaNGOS::AnyUnitInRangeCheck check(m_caster, radius);
+                MaNGOS::UnitListSearcher<MaNGOS::AnyUnitInRangeCheck> searcher(m_caster, targets, check);
+                Cell::VisitGridObjects(m_caster, searcher, radius);
 
-            FillAreaTargets(targetUnitMap, m_caster->GetPositionX(), m_caster->GetPositionY(), radius, PUSH_DEST_CENTER, targetB);
+                if (targets.empty())
+                    break;
+
+                SpellScriptTargetBounds bounds = sSpellMgr.GetSpellScriptTargetBounds(m_spellInfo->Id);
+
+                if (bounds.first == bounds.second)
+                {
+                    sLog.outErrorDb("Spell (ID: %u) has effect EffectImplicitTargetB = TARGET_AREAEFFECT_INSTANT but does not have record in `spell_script_target`", m_spellInfo->Id);
+                    break;
+                }
+
+                for (UnitList::const_iterator itr = targets.begin(); itr != targets.end(); ++itr)
+                {
+                    for (SpellScriptTarget::const_iterator i_spellST = bounds.first; i_spellST != bounds.second; ++i_spellST)
+                    {
+                        if (i_spellST->second.targetEntry == (*itr)->GetEntry())
+                        {
+                            // Activate Construct
+                            if (m_spellInfo->Id == 62488 && (*itr)->isInCombat())
+                                continue;
+
+                            if ((*itr)->isAlive() && i_spellST->second.type == SPELL_TARGET_TYPE_CREATURE || !(*itr)->isAlive() && i_spellST->second.type == SPELL_TARGET_TYPE_DEAD)
+                                targetUnitMap.push_back(*itr);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                SpellTargets targetB = SPELL_TARGETS_AOE_DAMAGE;
+                // Select friendly targets for positive effect
+                if (IsPositiveEffect(m_spellInfo->Id, effIndex))
+                    targetB = SPELL_TARGETS_FRIENDLY;
+
+                FillAreaTargets(targetUnitMap, m_caster->GetPositionX(), m_caster->GetPositionY(), radius, PUSH_DEST_CENTER, targetB);
+            }
 
             // exclude caster
             targetUnitMap.remove(m_caster);

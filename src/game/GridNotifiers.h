@@ -777,6 +777,22 @@ namespace MaNGOS
             float i_range;
     };
 
+    class AnyUnitInRangeCheck
+    {
+        public:
+            AnyUnitInRangeCheck(WorldObject const* obj, float range) : i_obj(obj), i_range(range) {}
+            bool operator()(Unit* u)
+            {
+                if (i_obj->IsWithinDistInMap(u, i_range))
+                    return true;
+
+                return false;
+            }
+        private:
+            WorldObject const* i_obj;
+            float i_range;
+    };
+
     class AnyUnitInObjectRangeCheck
     {
         public:

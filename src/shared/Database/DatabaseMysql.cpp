@@ -208,10 +208,10 @@ bool DatabaseMysql::_Query(const char *sql, MYSQL_RES **pResult, MYSQL_FIELD **p
             sLog.outErrorDb("query ERROR: %s", mysql_error(mMysql));
             return false;
         }
-        else
+        /*else
         {
             DEBUG_FILTER_LOG(LOG_FILTER_SQL_TEXT, "[%u ms] SQL: %s", getMSTimeDiff(_s,getMSTime()), sql );
-        }
+        }*/
 
         *pResult = mysql_store_result(mMysql);
         *pRowCount = mysql_affected_rows(mMysql);

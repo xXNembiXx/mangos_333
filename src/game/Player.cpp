@@ -17028,7 +17028,8 @@ void Player::_SaveAuras()
 
             //skip all auras from spells that are passive
             //do not save single target auras (unless they were cast by the player)
-            if (!itr2->second->IsPassive() && (itr2->second->GetCasterGUID() == GetGUID() || !itr2->second->IsSingleTarget()))
+            if (!itr2->second->IsPassive() && (itr2->second->GetCasterGUID() == GetGUID() || !itr2->second->IsSingleTarget()) &&
+                !IsChanneledSpell(itr2->second->GetSpellProto()))
             {
                 if (first_round)
                 {

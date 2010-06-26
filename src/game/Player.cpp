@@ -18958,7 +18958,7 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
 		{
             rec = GetAttackTime(RANGED_ATTACK);
             if(spellInfo->Id == 5019)
-                ProhibitSpellScholl(SPELL_SCHOOL_MASK_MAGIC, rec);//gkd
+                ProhibitSpellSchool(SPELL_SCHOOL_MASK_MAGIC, rec);//gkd
         }
 
         // Now we have cooldown data (if found any), time to apply mods

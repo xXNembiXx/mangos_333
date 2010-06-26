@@ -524,7 +524,7 @@ uint32 ArenaTeam::GetPoints(uint32 MemberRating)
 
     uint32 rating = MemberRating + 150 < m_stats.rating ? MemberRating : m_stats.rating;
 
-    if (sWorld.getConfig(CONFIG_ARENA_SEASON_ID) >= 6 && rating < 1500)
+    if (sWorld.getConfig(CONFIG_UINT32_ARENA_SEASON_ID) >= 6 && rating < 1500)
 		rating = 1500;
 
 	if(rating <= 1500)

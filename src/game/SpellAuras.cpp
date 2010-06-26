@@ -451,7 +451,7 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
 
     bool applyHaste = false;
     if((GetSpellProto()->AttributesEx & (SPELL_ATTR_EX_CHANNELED_1 | SPELL_ATTR_EX_CHANNELED_2)) // All channeled spells
-        || (GetSpellProto->AttributesEx5 & SPELL_ATTR_EX5_AFFECTED_BY_HASTE))                    // Some auras from 3.3.3
+        || (GetSpellProto()->AttributesEx5 & SPELL_ATTR_EX5_AFFECTED_BY_HASTE))                    // Some auras from 3.3.3
         applyHaste = true;
 
     //SPELL_AURA_APPLY_HASTE_TO_AURA implentation

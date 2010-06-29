@@ -1821,7 +1821,9 @@ bool InstanceMap::Add(Player *player)
                         GetInstanceSave()->GetMapId(), GetInstanceSave()->GetInstanceId(),
                         GetInstanceSave()->GetDifficulty(), GetInstanceSave()->GetPlayerCount(),
                         GetInstanceSave()->GetGroupCount(), GetInstanceSave()->CanReset());
-                    ASSERT(false);
+                    //ASSERT(false);
+					player->RepopAtGraveyard();
+					return false;
                 }
             }
             else
@@ -1845,6 +1847,8 @@ bool InstanceMap::Add(Player *player)
                                 groupBind->save->GetMapId(), groupBind->save->GetInstanceId(), groupBind->save->GetDifficulty(),
                                 groupBind->save->GetPlayerCount(), groupBind->save->GetGroupCount(), groupBind->save->CanReset());
                         //ASSERT(false);
+						player->RepopAtGraveyard();
+						return false;
                     }
                     // bind to the group or keep using the group save
                     if (!groupBind)
@@ -1888,9 +1892,11 @@ bool InstanceMap::Add(Player *player)
                     // set up a solo bind or continue using it
                     if(!playerBind)
                         player->BindToInstance(GetInstanceSave(), false);
-                    //else
+                    else
                         // cannot jump to a different instance without resetting it
                         //ASSERT(playerBind->save == mapSave);
+						player->RepopAtGraveyard();
+						return false;
                 }
             }
         }

@@ -43,7 +43,7 @@ INSTANTIATE_SINGLETON_1( InstanceSaveManager );
 
 InstanceSave::InstanceSave(uint16 MapId, uint32 InstanceId, Difficulty difficulty, time_t resetTime, bool canReset)
 : m_resetTime(resetTime), m_instanceid(InstanceId), m_mapid(MapId),
-  m_difficulty(difficulty), m_canReset(canReset)
+  m_difficulty(difficulty), m_canReset(canReset), m_usedByMap(false)
 {
 }
 
@@ -113,10 +113,9 @@ void InstanceSave::DeleteFromDB()
 /* true if the instance save is still valid */
 bool InstanceSave::UnloadIfEmpty()
 {
-    if(m_playerList.empty() && m_groupList.empty())
+    if (m_playerList.empty() && m_groupList.empty() && !m_usedByMap)
     {
-        if(!sInstanceSaveMgr.lock_instLists)
-            sInstanceSaveMgr.RemoveInstanceSave(GetInstanceId());
+        sInstanceSaveMgr.RemoveInstanceSave(GetInstanceId());
         return false;
     }
     else
@@ -421,14 +420,17 @@ void InstanceSaveManager::DeleteInstanceFromDB(uint32 instanceid)
 
 void InstanceSaveManager::RemoveInstanceSave(uint32 InstanceId)
 {
+    if (lock_instLists)
+        return;
+
     InstanceSaveHashMap::iterator itr = m_instanceSaveById.find( InstanceId );
     if(itr != m_instanceSaveById.end())
     {
         // save the resettime for normal instances only when they get unloaded
         if(time_t resettime = itr->second->GetResetTimeForDB())
             CharacterDatabase.PExecute("UPDATE instance SET resettime = '"UI64FMTD"' WHERE id = '%u'", (uint64)resettime, InstanceId);
-        delete itr->second;
-        m_instanceSaveById.erase(itr);
+
+        _ResetSave(itr);
     }
 }
 

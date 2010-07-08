@@ -775,6 +775,7 @@ bool Item::IsFitToSpellRequirements(SpellEntry const* spellInfo) const
         return ((proto->SubClass == ITEM_SUBCLASS_WEAPON_ENCHANTMENT && spellInfo->EquippedItemClass == ITEM_CLASS_WEAPON) ||
                 (proto->SubClass == ITEM_SUBCLASS_ARMOR_ENCHANTMENT && spellInfo->EquippedItemClass == ITEM_CLASS_ARMOR));
     }
+	// Vellum enchant case should ignore everything below
 
     if (spellInfo->EquippedItemClass != -1)                 // -1 == any item class
     {

@@ -1874,7 +1874,9 @@ bool InstanceMap::Add(Player *player)
                                 sLog.outError("GroupBind save players: %d, group count: %d", groupBind->save->GetPlayerCount(), groupBind->save->GetGroupCount());
                             else
                                 sLog.outError("GroupBind save NULL");
-                            ASSERT(false);
+                            //ASSERT(false);
+							player->TeleportToHomebind();
+							return false;
                         }
                         // if the group/leader is permanently bound to the instance
                         // players also become permanently bound when they enter

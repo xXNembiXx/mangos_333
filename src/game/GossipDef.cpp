@@ -37,7 +37,7 @@ GossipMenu::~GossipMenu()
 
 void GossipMenu::AddMenuItem(uint8 Icon, const std::string& Message, uint32 dtSender, uint32 dtAction, const std::string& BoxMessage, uint32 BoxMoney, bool Coded)
 {
-    ASSERT( m_gItems.size() <= GOSSIP_MAX_MENU_ITEMS  );
+    //ASSERT( m_gItems.size() <= GOSSIP_MAX_MENU_ITEMS  );
 
     GossipMenuItem gItem;
 

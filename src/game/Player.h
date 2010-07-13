@@ -2402,6 +2402,9 @@ class MANGOS_DLL_SPEC Player : public Unit
         void SetTitle(CharTitlesEntry const* title, bool lost = false);
 
         bool canSeeSpellClickOn(Creature const* creature) const;
+		
+        uint32 m_grid_update_timer;
+
     protected:
 
         uint32 m_contestedPvPTimer;

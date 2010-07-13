@@ -6048,8 +6048,18 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     if (!IsPositiveSpell(procSpell->Id))
                         return false;
 
+                    if (!pVictim || !pVictim->isAlive())
+                        return false;	
+
+                     basepoints[0] = damage * 15 / 100;	
+
+                    if (Aura* aura = pVictim->GetAura(64413, EFFECT_INDEX_0))
+                        basepoints[0] += aura->GetModifier()->m_amount;
+
+                    if (basepoints[0] > 20000)
+                        basepoints[0] = 20000;	
+
                     triggered_spell_id = 64413;
-                    basepoints[0] = damage * 15 / 100;
                     break;
                 }
 

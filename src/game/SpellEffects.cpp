@@ -6391,26 +6391,6 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     m_caster->CastSpell(unitTarget, 72588, true);
                     return;
                 }
-				// Glyph of Shred
-                case 63974:
-                {
-                    if (Aura * aurEff = unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_DRUID,0x00800000,0,m_caster->GetGUID()))
-                    {
-                        uint32 countMin = aurEff->GetAuraMaxDuration();
-                        uint32 countMax = 20000;
-                        countMax += m_caster->HasAura(54818) ? 4000 : 0;
-                        countMax += m_caster->HasAura(60141) ? 4000 : 0;
-
-                        if (countMin < countMax)
-                        {
-                            aurEff->SetAuraDuration(uint32(aurEff->GetAuraDuration()+3000));
-                            aurEff->SetAuraMaxDuration(countMin+2000);
-                            aurEff->SendAuraUpdate(false);
-                        }
-
-                    }
-                    return;
-                }
                 // Glyph of Backstab
                 case 63975:
                 {
@@ -6947,6 +6927,25 @@ void Spell::EffectSanctuary(SpellEffectIndex /*eff_idx*/)
         return;
     //unitTarget->CombatStop();
 
+    std::list<Unit *> targets;
+    {
+        MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(m_caster, m_caster, m_caster->GetMap()->GetVisibilityDistance());
+        MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(m_caster, targets, u_check);
+        Cell::VisitAllObjects(m_caster, searcher, m_caster->GetMap()->GetVisibilityDistance());
+    }
+
+    for(std::list<Unit *>::iterator tIter = targets.begin(); tIter != targets.end(); ++tIter)
+    {
+        for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; ++i)
+        {
+            if ((*tIter)->GetCurrentSpell(CurrentSpellTypes(i))
+            && (*tIter)->GetCurrentSpell(CurrentSpellTypes(i))->m_targets.getUnitTargetGUID() == unitTarget->GetGUID())
+            {
+                (*tIter)->InterruptSpell(CurrentSpellTypes(i), false);
+            }
+        }
+    }
+
     unitTarget->CombatStop();
     unitTarget->getHostileRefManager().deleteReferences();  // stop all fighting
     // Vanish allows to remove all threat and cast regular stealth so other spells can be used
@@ -7074,6 +7073,9 @@ void Spell::EffectStuck(SpellEffectIndex /*eff_idx*/)
     DETAIL_LOG("Player %s (guid %u) used auto-unstuck future at map %u (%f, %f, %f)", pTarget->GetName(), pTarget->GetGUIDLow(), m_caster->GetMapId(), m_caster->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ());
 
     if(pTarget->isInFlight())
+        return;
+		
+    if(pTarget->InBattleGround())
         return;
 
     pTarget->RepopAtGraveyard();

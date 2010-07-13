@@ -2510,6 +2510,20 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 }
                 break;
             }
+            case SPELLFAMILY_PRIEST:
+            {
+                // Penance
+                if (m_spellProto->SpellIconID == 225)
+                {
+                    Unit* caster = GetCaster();
+                    if (!caster || !target || caster->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    ((Player*)caster)->SetSelection(target->GetGUID());
+                    return;
+                }
+                break;
+            }
             case SPELLFAMILY_SHAMAN:
             {
                 // Tidal Force
@@ -4356,6 +4370,17 @@ void Aura::HandleAuraModStun(bool apply, bool Real)
             data << target->GetPackGUID();
             data << uint32(0);
             target->SendMessageToSet(&data, true);
+        }
+
+        // Seduction (Succubus spell)
+        if (m_spellProto->Id == 6358)
+        {
+            Unit* pCaster = GetCaster();
+            if(!pCaster)
+                return;
+            
+            pCaster->InterruptSpell(CURRENT_CHANNELED_SPELL,false);
+            return;
         }
 
         // Wyvern Sting

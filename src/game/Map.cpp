@@ -636,7 +636,7 @@ void Map::Update(const uint32 &t_diff)
             NGridType *grid = i->getSource();
             GridInfo *info = i->getSource()->getGridInfoRef();
             ++i;                                                // The update might delete the map and we need the next map before the iterator gets invalid
-            ASSERT(grid->GetGridState() >= 0 && grid->GetGridState() < MAX_GRID_STATE);
+            //ASSERT(grid->GetGridState() >= 0 && grid->GetGridState() < MAX_GRID_STATE);
             sMapMgr.UpdateGridState(grid->GetGridState(), *this, *grid, *info, grid->getX(), grid->getY(), t_diff);
         }
     }
@@ -768,6 +768,13 @@ Map::PlayerRelocation(Player *player, float x, float y, float z, float orientati
         NGridType* newGrid = getNGrid(new_cell.GridX(), new_cell.GridY());
         player->GetViewPoint().Event_GridChanged(&(*newGrid)(new_cell.CellX(),new_cell.CellY()));
     }
+
+    // FG: attempt to use less CPU, reduce calling interval of CPU-intensive grid search to min. 500 ms
+    uint32 timems = getMSTime();
+    if(getMSTimeDiff(player->m_grid_update_timer, timems) >= 500)
+        player->m_grid_update_timer = timems;
+    else
+        return;
 
     player->GetViewPoint().Call_UpdateVisibilityForOwner();
     // if move then update what player see and who seen

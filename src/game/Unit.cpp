@@ -6041,8 +6041,18 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     if (!IsPositiveSpell(procSpell->Id))
                         return false;
 
+                    if (!pVictim || !pVictim->isAlive())
+                        return false;	
+
+                     basepoints[0] = damage * 15 / 100;	
+
+                    if (Aura* aura = pVictim->GetAura(64413, EFFECT_INDEX_0))
+                        basepoints[0] += aura->GetModifier()->m_amount;
+
+                    if (basepoints[0] > 20000)
+                        basepoints[0] = 20000;	
+
                     triggered_spell_id = 64413;
-                    basepoints[0] = damage * 15 / 100;
                     break;
                 }
 
@@ -6527,7 +6537,20 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 // Glyph of Shred
                 case 54815:
                 {
-                    triggered_spell_id = 63974;
+                    if (Aura * aurEff = target->GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_DRUID,0x00800000,0,GetGUID()))
+                    {
+                        uint32 countMin = aurEff->GetAuraMaxDuration();
+                        uint32 countMax = 20000;
+                        countMax += HasAura(54818) ? 4000 : 0;
+                        countMax += HasAura(60141) ? 4000 : 0;
+
+                        if (countMin < countMax)
+                        {
+                            aurEff->SetAuraDuration(uint32(aurEff->GetAuraDuration()+3000));
+                            aurEff->SetAuraMaxDuration(countMin+2000);
+                            aurEff->SendAuraUpdate(false);
+                        }
+                    }
                     break;
                 }
                 // Glyph of Rejuvenation
@@ -9724,17 +9747,22 @@ Unit* Unit::SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo)
     if(!victim)
         return NULL;
 
-    // Magic case
-    if(spellInfo && (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC) &&
-    (spellInfo->SchoolMask & SPELL_SCHOOL_MASK_MAGIC || spellInfo->Mechanic == MECHANIC_GRIP))
+    // SPELL_AURA_SPELL_MAGNET must NOT take any physical spells except for Hamstring, Wing Clip and Death Grip
+    if(spellInfo && ((spellInfo->SchoolMask != SPELL_SCHOOL_MASK_NORMAL && spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC) || (spellInfo->Id == 1715 || spellInfo->Id == 2974 || spellInfo->Id == 49576)))
     {
         Unit::AuraList const& magnetAuras = victim->GetAurasByType(SPELL_AURA_SPELL_MAGNET);
         for(Unit::AuraList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
             if(Unit* magnet = (*itr)->GetCaster())
                 if(magnet->IsWithinLOSInMap(this) && magnet->isAlive())
+				{
+                    //Destroy totem...
+                    if( ((Creature*)magnet)->isTotem())
+                         magnet->CastSpell(magnet, 5, true);
+
                     return magnet;
+				}
     }
-    // Melee && ranged case
+    // Normal case
     else
     {
         AuraList const& hitTriggerAuras = victim->GetAurasByType(SPELL_AURA_ADD_CASTER_HIT_TRIGGER);
@@ -9742,7 +9770,12 @@ Unit* Unit::SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo)
             if(Unit* magnet = (*i)->GetCaster())
                 if(magnet->isAlive() && magnet->IsWithinLOSInMap(this))
                     if(roll_chance_i((*i)->GetModifier()->m_amount))
-                        return magnet;
+                        if ((*i)->GetAuraCharges())
+                        {
+                            if((*i)->DropAuraCharge())
+                                victim->RemoveAura((*i),AURA_REMOVE_BY_DEFAULT);
+                            return magnet;
+                        }
     }
 
     return victim;
@@ -13860,7 +13893,7 @@ void Unit::SetFeared(bool apply, uint64 const& casterGUID, uint32 spellID, uint3
     {
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
 
-        GetMotionMaster()->Clear(false);
+        GetMotionMaster()->MovementExpired(false);
 
         if( GetTypeId() != TYPEID_PLAYER && isAlive() )
         {
@@ -13899,7 +13932,7 @@ void Unit::SetConfused(bool apply, uint64 const& casterGUID, uint32 spellID)
     {
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
 
-        GetMotionMaster()->Clear(false);
+        GetMotionMaster()->MovementExpired(false);
 
         if (GetTypeId() != TYPEID_PLAYER && isAlive())
         {

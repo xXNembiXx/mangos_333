@@ -7072,6 +7072,9 @@ void Spell::EffectStuck(SpellEffectIndex /*eff_idx*/)
 
     if(pTarget->isInFlight())
         return;
+		
+    if(pTarget->InBattleGround())
+        return;
 
     pTarget->RepopAtGraveyard();
 

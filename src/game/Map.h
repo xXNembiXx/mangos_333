@@ -38,7 +38,6 @@
 #include <bitset>
 #include <list>
 
-class Creature;
 class Unit;
 class WorldPacket;
 class InstanceData;

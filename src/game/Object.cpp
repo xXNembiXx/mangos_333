@@ -290,6 +290,9 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
                         }
                     }
                 }
+                if(unit->GetVehicleGUID())
+                   unit->m_movementInfo.AddMovementFlag(MOVEFLAG_ONTRANSPORT);
+
             }
             break;
             case TYPEID_PLAYER:
@@ -304,6 +307,8 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
                 // remove unknown, unused etc flags for now
                 player->m_movementInfo.RemoveMovementFlag(MOVEFLAG_SPLINE_ENABLED);
 
+                if(((Unit*)this)->GetVehicleGUID())
+                    player->m_movementInfo.AddMovementFlag(MOVEFLAG_ONTRANSPORT);
                 if(player->isInFlight())
                 {
                     ASSERT(player->GetMotionMaster()->GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE);
@@ -1114,7 +1119,11 @@ void WorldObject::Relocate(float x, float y, float z, float orientation)
     m_orientation = orientation;
 
     if(isType(TYPEMASK_UNIT))
+    {
         ((Unit*)this)->m_movementInfo.ChangePosition(x, y, z, orientation);
+        if(((Creature*)this)->isVehicle())
+            ((Vehicle*)this)->RellocatePassengers(GetMap());
+    }
 }
 
 void WorldObject::Relocate(float x, float y, float z)
@@ -1124,7 +1133,11 @@ void WorldObject::Relocate(float x, float y, float z)
     m_positionZ = z;
 
     if(isType(TYPEMASK_UNIT))
+    {
         ((Unit*)this)->m_movementInfo.ChangePosition(x, y, z, GetOrientation());
+        if(((Creature*)this)->isVehicle())
+            ((Vehicle*)this)->RellocatePassengers(GetMap());
+    }
 }
 
 uint32 WorldObject::GetZoneId() const
@@ -1728,6 +1741,42 @@ GameObject* WorldObject::SummonGameobject(uint32 id, float x, float y, float z, 
     map->Add(pGameObj);
 
     return pGameObj;
+}
+
+Vehicle* WorldObject::SummonVehicle(uint32 id, float x, float y, float z, float ang, uint32 vehicleId)
+{
+    Vehicle *v = new Vehicle;
+
+    Map *map = GetMap();
+    uint32 team = 0;
+    if (GetTypeId()==TYPEID_PLAYER)
+        team = ((Player*)this)->GetTeam();
+
+    if(!v->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_VEHICLE), map, GetPhaseMask(), id, vehicleId, team))
+    {
+        delete v;
+        return NULL;
+    }
+
+    if (x == 0.0f && y == 0.0f && z == 0.0f)
+        GetClosePoint(x, y, z, v->GetObjectBoundingRadius());
+
+    v->Relocate(x, y, z, ang);
+
+    if(!v->IsPositionValid())
+    {
+        sLog.outError("ERROR: Vehicle (guidlow %d, entry %d) not created. Suggested coordinates isn't valid (X: %f Y: %f)",
+            v->GetGUIDLow(), v->GetEntry(), v->GetPositionX(), v->GetPositionY());
+        delete v;
+        return NULL;
+    }
+    map->Add((Creature*)v);
+    v->AIM_Initialize();
+
+    if(GetTypeId()==TYPEID_UNIT && ((Creature*)this)->AI())
+        ((Creature*)this)->AI()->JustSummoned((Creature*)v);
+
+    return v;
 }
 
 namespace MaNGOS

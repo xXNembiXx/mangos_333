@@ -1563,3 +1563,15 @@ bool GameObject::IsFriendlyTo(Unit const* unit) const
     // common faction based case (GvC,GvP)
     return tester_faction->IsFriendlyTo(*target_faction);
 }
+
+void GameObject::DealSiegeDamage(uint32 damage)
+{
+    m_actualHealth -= damage;
+
+    // TODO : there are a lot of thinghts to do here
+    if(m_actualHealth < 0)
+    {
+        m_actualHealth = GetGOInfo()->destructibleBuilding.intactNumHits;
+        SetLootState(GO_JUST_DEACTIVATED);
+    }
+}

@@ -53,7 +53,6 @@ m_maxSpeed(0), m_capturePoint(NULL)
 
 bool OPvPCapturePoint::HandlePlayerEnter(Player * plr)
 {
-    sLog.outError("OPvPCapturePoint::HandlePlayerEnter");
     if(m_capturePoint)
     {
         plr->SendUpdateWorldState(m_capturePoint->GetGOInfo()->capturePoint.worldState1, 1);
@@ -92,7 +91,6 @@ void OPvPCapturePoint::AddGO(uint32 type, uint32 guid, uint32 entry)
             return;
         entry = data->id;
     }
-    sLog.outError("!! OPvPCapturePoint::AddGO !! ");
     m_Objects[type] = MAKE_NEW_GUID(guid, entry, HIGHGUID_GAMEOBJECT);
     m_ObjectTypes[m_Objects[type]]=type;
 }
@@ -136,12 +134,10 @@ bool OPvPCapturePoint::AddObject(uint32 type, uint32 entry, uint32 mapId, float 
     data.artKit         = goinfo->type == GAMEOBJECT_TYPE_CAPTURE_POINT ? 21 : 0;
     data.dbData = false;
 
-    //Map *map = _findMap(mapid);
-    //Map *map = sMapMgr.FindMap(mapId, 0);
     Map * map = const_cast<Map*>(sMapMgr.CreateBaseMap(mapId));
     if(!map)
     {
-        sLog.outError("Map cannot be initialized ! %i !", mapId);
+        sLog.outError("Map (Id: %i) for AddObject cannot be initialized.", mapId);
         return false;
     }
 
@@ -221,8 +217,6 @@ bool OPvPCapturePoint::DelCreature(uint32 type)
         return false;
     }
 
-   // Creature * cr = Unit::GetUnit(
-    //Creature *cr = HashMapHolder<Creature>::Find(m_Creatures[type]);
     Creature * cr = ObjectAccessor::GetCreatureInWorld(m_Creatures[type]);
     if(!cr)
     {
@@ -254,7 +248,6 @@ bool OPvPCapturePoint::DelObject(uint32 type)
     if(!m_Objects[type])
         return false;
 
-    //GameObject *obj = HashMapHolder<GameObject>::Find(m_Objects[type]);
     GameObject * obj = ObjectAccessor::GetGameObjectInWorld(m_Objects[type]);
     if(!obj)
     {
@@ -682,7 +675,6 @@ void OutdoorPvP::TeamApplyBuff(TeamId team, uint32 spellId, uint32 spellId2)
 
 void OutdoorPvP::OnGameObjectCreate(GameObject *go, bool add)
 {
-    sLog.outError("OutdoorPvP::OnGameObjectCreate"); 
     if(go->GetGoType() != GAMEOBJECT_TYPE_CAPTURE_POINT)
         return;
 

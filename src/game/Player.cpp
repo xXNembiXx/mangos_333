@@ -8070,14 +8070,17 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                     loot->clear();
                     loot->FillLoot(lootid, LootTemplates_Gameobject, this, false);
                     loot->generateMoneyLoot(go->GetGOInfo()->MinMoneyLoot, go->GetGOInfo()->MaxMoneyLoot);
-                    if(go->GetGoType() == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.groupLootRules)
-                    {
-                        if(Group* group = GetGroup())
-                        {
-                            group->UpdateLooterGuid(go,true);
 
-                            switch (group->GetLootMethod())
+                    if (Group* group = this->GetGroup())
+                    {
+                        if (go->GetGoType() == GAMEOBJECT_TYPE_CHEST)
+                        {
+                            if (go->GetGOInfo()->chest.groupLootRules == 1)
                             {
+                                group->UpdateLooterGuid(go,true);
+
+                                switch (group->GetLootMethod())
+                                {
                                 case GROUP_LOOT:
                                     // GroupLoot delete items over threshold (threshold even not implemented), and roll them. Items with quality<threshold, round robin
                                     group->GroupLoot(go, loot);
@@ -8093,6 +8096,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
                                     break;
                                 default:
                                     break;
+                                }
                             }
                         }
                     }

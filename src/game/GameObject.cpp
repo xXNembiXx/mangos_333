@@ -183,7 +183,7 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map *map, uint32 phaseMa
     return true;
 }
 
-void GameObject::Update(uint32 p_time)
+void GameObject::Update(uint32 diff)
 {
     if (GetObjectGuid().IsMOTransport())
     {
@@ -390,19 +390,12 @@ void GameObject::Update(uint32 p_time)
                     }
                     break;
                 case GAMEOBJECT_TYPE_CHEST:
-                    if (m_groupLootTimer && m_groupLootId)
+                    if (m_groupLootId)
                     {
-                        if(p_time <= m_groupLootTimer)
-                        {
-                            m_groupLootTimer -= p_time;
-                        }
+                        if(diff < m_groupLootTimer)
+                            m_groupLootTimer -= diff;
                         else
-                        {
-                            if (Group* group = sObjectMgr.GetGroupById(m_groupLootId))
-                                group->EndRoll();
-                            m_groupLootTimer = 0;
-                            m_groupLootId = 0;
-                        }
+                            StopGroupLoot();
                     }
                     break;
                 default:

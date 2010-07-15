@@ -73,6 +73,7 @@ class Unit;
 class Map;
 class UpdateMask;
 class InstanceData;
+class ZoneScript;
 class Vehicle;
 
 typedef UNORDERED_MAP<Player*, UpdateData> UpdateDataMapType;
@@ -493,6 +494,9 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         //this function should be removed in nearest time...
         Map const* GetBaseMap() const;
 
+        void SetZoneScript();
+        ZoneScript * GetZoneScript() const { return m_zoneScript; }
+
         void AddToClientUpdateList();
         void RemoveFromClientUpdateList();
         void BuildUpdateData(UpdateDataMapType &);
@@ -516,6 +520,7 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         void SetLocationMapId(uint32 _mapId) { m_mapId = _mapId; }
         void SetLocationInstanceId(uint32 _instanceId) { m_InstanceId = _instanceId; }
 
+        ZoneScript *m_zoneScript;
         std::string m_name;
 
         bool m_isActiveObject;

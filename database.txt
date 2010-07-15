@@ -1,0 +1,41 @@
+########################################################
+#
+#			Database Installation Instruction
+#						15-07-2010
+#
+########################################################
+
+## clean world database
+
+-- ytdb R55
+YTDB_0.13.5_R550_MaNGOS_R10023_SD2_R1706_ACID_R304_RuDB_R37.7.sql
+
+-- updates ytdb
+551_corepatch_mangos_10023_to_10048.sql
+551_mangos_FIX_(10048).sql
+552_corepatch_mangos_10048_to_10065.sql
+552_mangos_FIX_(10065).sql
+553_corepatch_mangos_10065_to_10100.sql
+553_mangos_FIX_(10100).sql
+554_corepatch_mangos_10100_to_10120.sql
+554_mangos_FIX_(10120).sql
+
+-- 332_to_333a
+mangos.sql
+
+-- Custom/Updatepacks
+UP_mangos.sql
+UP_scriptdev2_mangos.sql
+
+-- custom/Events
+RU/EN SQL (orgri_attack)
+RU/EN SQL (storm_attack)
+
+
+## clean scriptdev2 database
+
+-- updates sd2
+scriptdev2_script_full.sql
+
+-- custom updatepack
+UP_scriptdev2_sd2.sql

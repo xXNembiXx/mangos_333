@@ -20,6 +20,7 @@
 #define MANGOS_INSTANCE_DATA_H
 
 #include "Common.h"
+#include "GameObject.h"
 
 class Map;
 class Unit;

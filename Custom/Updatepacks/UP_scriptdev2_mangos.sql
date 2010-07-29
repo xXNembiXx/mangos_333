@@ -1860,3 +1860,71 @@ UPDATE `creature_template` SET ScriptName='npc_rabid_thistle_bear' where entry='
 UPDATE `creature_template` SET `MovementType`='0', `flags_extra`='64', `speed_walk`='1' WHERE (`entry`='2983');
 UPDATE `quest_template` SET `SpecialFlags`='2' WHERE (`entry`='772');
 UPDATE `creature_template` SET `ScriptName`='npc_plains_vision' WHERE (`entry`='2983');
+
+-- [S29] Tree_Company_mangos.sql
+	-- deleting ytdb quest support for compatible reason
+
+DELETE FROM `creature_ai_scripts` WHERE creature_id=17318;
+
+	-- adding event handling for spell event
+
+DELETE FROM `event_scripts` WHERE (`id`='10675');
+INSERT INTO event_scripts () VALUES
+   (10675, 0, 10, 17243, 80000, 0, -5029.91, -11291.79, 8.096, 6.27609),
+   (10675, 90, 8, 17243, 1, 0, 0, 0, 0, 0),
+   (10675, 1, 10, 17318, 80000, 0, -5152.65, -11250.14, 3.6, 2.82662);
+
+UPDATE `creature_template` SET `ScriptName`='npc_geezle' WHERE (`entry`='17318');
+
+-- [S30] Totem_of_Coo_mangos.sql
+DELETE FROM `creature` WHERE (`id`='17379');
+UPDATE `creature_template` SET `ScriptName`='npc_ancestor_akida' WHERE (`entry`='17379');
+UPDATE `creature_template` SET `ScriptName`='npc_totem_of_akida' WHERE (`entry`='17360');
+UPDATE `quest_template` SET `SpecialFlags`='2' WHERE (`entry`='9539');
+
+-- [S31] Totem_of_Tikti_mangos.sql
+DELETE FROM `creature` WHERE (`id`='17391');
+UPDATE `creature_template` SET `ScriptName`='npc_ancestor_coo' WHERE (`entry`='17391');
+UPDATE `creature_template` SET `ScriptName`='npc_totem_of_coo' WHERE (`entry`='17361');
+UPDATE `quest_template` SET `SpecialFlags`='2', `SrcSpell`=NULL WHERE (`entry`='9540');
+
+-- [S32] Totem_of_Yor_mangos.sql
+DELETE FROM `creature` WHERE (`id`='17392');
+UPDATE `creature_template` SET `ScriptName`='npc_ancestor_tikti' WHERE (`entry`='17392');
+UPDATE `creature_template` SET `ScriptName`='npc_totem_of_tikti' WHERE (`entry`='17362');
+UPDATE `quest_template` SET `SpecialFlags`='2', `SrcSpell`=NULL WHERE (`entry`='9541');
+
+-- [S33] Totem_of_Vark_mangos.sql
+DELETE FROM `creature` WHERE (`id`='17393');
+UPDATE `creature_template` SET `ScriptName`='npc_ancestor_yor' WHERE (`entry`='17393');
+UPDATE `creature_template` SET `ScriptName`='npc_totem_of_yor' WHERE (`entry`='17363');
+UPDATE `quest_template` SET `SpecialFlags`='2', `SrcSpell`=NULL WHERE (`entry`='9542');
+
+-- [S35] Load_er_Up.sql
+	-- Load'er Up!
+
+UPDATE `creature_template` SET `ScriptName`='npc_fezzix_geartwist' WHERE (`entry`='25849');
+
+-- [S36] Bury_Those_Cockroaches.sql
+	-- Bury Those Cockroaches!
+
+UPDATE `creature_template` SET `ScriptName`='npc_nerubar_sinkhole' WHERE (`entry`='25403');
+UPDATE `creature_template` SET `ScriptName`='npc_nerubar_sinkhole' WHERE (`entry`='25402');
+UPDATE `creature_template` SET `ScriptName`='npc_nerubar_sinkhole' WHERE (`entry`='25405');
+UPDATE `creature_template` SET `ScriptName`='npc_nerubar_sinkhole' WHERE (`entry`='25404');
+
+-- [S37] Hints_of_a_new_Plague_mangos.sql
+	-- Hints of a new Plague
+
+UPDATE creature_template SET ScriptName="npc_kinelory" WHERE entry= 2713;
+UPDATE quest_template SET StartScript=0 WHERE entry=660;
+
+-- [S38] Matis_the_Cruel_mangos.sql
+	-- update script for questitem, quest-npc, end-quest-npc
+UPDATE `item_template` SET ScriptName='item_flare_gun' WHERE entry=24278;
+UPDATE `creature_template` SET ScriptName='npc_vindicator_kuros' WHERE entry=17843;
+UPDATE `creature_template` SET ScriptName='npc_tracker_of_the_hand' WHERE entry=17853;
+
+	-- anpassen der geschwindigkeiten damit die npcs synchron laufen, der 2. eintrag ist für matis, und wirkt nur bei diesem event
+UPDATE `creature_template` SET `MovementType`='0' WHERE (`entry`='17659');
+UPDATE `creature_template` SET `speed_walk` = '1.48' WHERE (`entry` = '17865');

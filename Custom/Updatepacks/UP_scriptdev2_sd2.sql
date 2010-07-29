@@ -2144,3 +2144,145 @@ VALUES
    ( 2983, 48, -1517.01,  350.713,    62.4286, 0, 'Plains Vision Waypoint'),
    ( 2983, 49, -1511.39,  362.537,    62.4539, 0, 'Plains Vision Waypoint'),
    ( 2983, 50, -1508.68,  366.822,    62.733, 0, 'Plains Vision Waypoint');
+
+-- [S29] Tree_Company_scriptdev2.sql
+REPLACE INTO script_texts
+   (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`)
+VALUES
+   (-1050000, 'What\'s the big idea, Spark? Why\'d you call for this meeting?', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050001, 'What\'s the big idea? You nearly blew my cover, idiot! I told you to put the compass and navigation maps somewhere safe - not out in the open for any fool to discover. ', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050002, 'The Master has gone to great lengths to secure information about the whereabouts of the Exodar. You could have blown the entire operation, including the cover of our spy on the inside. ', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050003, 'Relax, Spark! I have it all under control. We\'ll strip mine the Exodar right out from under \'em - making both you and I very, very rich in the process. ', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050004, 'Relax? Do you know what Kael\'thas does to those that fail him, Geezle? Eternal suffering and pain... Do NOT screw this up, fool. ', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050005, 'Our Bloodmyst scouts must have located our contact. The fool, Velen, will soon leave himself open and defenseless -- long enough for us to strike! Now get out of my sight before I vaporize you... ', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050006, 'Yes, sir. It won\'t happen again...', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '');
+
+-- [S30] Totem_of_Coo_scriptdev2.sql
+DELETE FROM `script_waypoint` WHERE (`entry`='17379');
+INSERT INTO script_waypoint (`entry`, `pointid`, `location_x`, `location_y`, `location_z`, `waittime`, `point_comment`) VALUES
+( 17379, 1, -4173.75,  -12514.605,   44.37066, 0, 'Ancestor Akida Waypoint'),
+( 17379, 2, -4140.67,  -12518.501,   45.80541, 0, 'Ancestor Akida Waypoint'),
+( 17379, 3, -4088.37,  -12526.445,   42.80884, 0, 'Ancestor Akida Waypoint'),
+( 17379, 4, -4069.28,  -12541.747,   43.24752, 0, 'Ancestor Akida Waypoint'),
+( 17379, 5, -4061.57,  -12552.793,   40.82198, 0, 'Ancestor Akida Waypoint'),
+( 17379, 6, -4029.66,  -12587.724,   49.93429, 0, 'Ancestor Akida Waypoint'),
+( 17379, 7, -4029.66,  -12587.724,   49.93429, 0, 'Ancestor Akida Waypoint'),
+( 17379, 8, -3993.81,  -12634.629,   62.81399, 0, 'Ancestor Akida Waypoint'),
+( 17379, 9, -3967.10,  -12679.759,   70.83762, 0, 'Ancestor Akida Waypoint'),
+( 17379, 10, -3923.55,  -12745.004,   96.03991, 0, 'Ancestor Akida Waypoint');
+
+REPLACE INTO script_texts
+   (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`)
+VALUES
+   (-1050010, 'Follow me I shall result you on a place!', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '');
+
+-- [S31] Totem_of_Tikti_scriptdev2.sql
+DELETE FROM `script_waypoint` WHERE (`entry`='17391');
+INSERT INTO script_waypoint (`entry`, `pointid`, `location_x`, `location_y`, `location_z`, `waittime`, `point_comment`) VALUES
+( 17391, 1, -3926.08,  -12755.158,   99.08043, 0, 'Ancestor Coo Waypoint'),
+( 17391, 2, -3924.02,  -12763.896,   101.54787, 0, 'Ancestor Coo Waypoint');
+
+REPLACE INTO script_texts
+   (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`)
+VALUES
+   (-1050014, 'Follow me!', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050015, 'Ritk kin\'chikx azul azure summit...', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050016, 'Coo xip fly... Jump ilos river. Find Tikti.', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '');
+
+-- [S32] Totem_of_Yor_scriptdev2.sql
+DELETE FROM `script_waypoint` WHERE (`entry`='17392');
+INSERT INTO script_waypoint (`entry`, `pointid`, `location_x`, `location_y`, `location_z`, `waittime`, `point_comment`) VALUES
+( 17392, 1, -3881.70,  -13111.898,   5.81401, 0, 'Ancestor Tikti Waypoint'),
+( 17392, 2, -3894.24,  -13077.400,   0.07646, 0, 'Ancestor Tikti Waypoint'),
+( 17392, 3, -3899.35,  -13037.608,   -10.1982, 0, 'Ancestor Tikti Waypoint');
+
+REPLACE INTO script_texts
+   (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`)
+VALUES
+   (-1050014, 'Follow me!', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050015, '[Furbolg] Far you mixik tak come. Gaze upon the kitch\'kal river. Follow. Ilog to Yor.', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050016, '[Furbolg] Go... Search yitix\'kil bottom river. South!', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '');
+
+-- [S33] Totem_of_Vark_scriptdev2.sql
+DELETE FROM `script_waypoint` WHERE (`entry`='17393');
+INSERT INTO script_waypoint (`entry`, `pointid`, `location_x`, `location_y`, `location_z`, `waittime`, `point_comment`) VALUES
+( 17393, 1, -4649.38,  -13007.5576,   0.162367, 0, 'Ancestor Yor Waypoint'),
+( 17393, 2, -4604.53,  -12942.9570,   2.922896, 0, 'Ancestor Yor Waypoint'),
+( 17393, 3, -4580.22,  -12906.0537,   11.97748, 0, 'Ancestor Yor Waypoint'),
+( 17393, 4, -4568.75,  -12868.1787,   7.927529, 0, 'Ancestor Yor Waypoint'),
+( 17393, 5, -4554.15,  -12831.7529,   12.02446, 0, 'Ancestor Yor Waypoint'),
+( 17393, 6, -4546.50,  -12792.3477,   16.54275, 0, 'Ancestor Yor Waypoint'),
+( 17393, 7, -4542.02,  -12741.7676,   9.442755, 0, 'Ancestor Yor Waypoint'),
+( 17393, 8, -4531.60,  -12668.3301,   16.59256, 0, 'Ancestor Yor Waypoint'),
+( 17393, 9, -4533.93,  -12614.7734,   12.47356, 0, 'Ancestor Yor Waypoint'),
+( 17393, 10, -4538.40,  -12557.1943,  12.974200, 0, 'Ancestor Yor Waypoint'),
+( 17393, 11, -4542.75,  -12491.9033,  3.171876, 0, 'Ancestor Yor Waypoint'),
+( 17393, 12, -4548.39,  -12419.8945,   8.676768, 0, 'Ancestor Yor Waypoint'),
+( 17393, 13, -4554.66,  -12380.1074,   19.042257, 0, 'Ancestor Yor Waypoint'),
+( 17393, 14, -4569.86,  -12336.9443,   21.875879, 0, 'Ancestor Yor Waypoint'),
+( 17393, 15, -4582.32,  -12297.8769,   15.123099, 0, 'Ancestor Yor Waypoint'),
+( 17393, 16, -4605.11,  -12233.0928,   28.588888, 0, 'Ancestor Yor Waypoint'),
+( 17393, 17, -4603.43,  -12153.1113,   39.701370, 0, 'Ancestor Yor Waypoint'),
+( 17393, 18, -4599.52,  -12068.0009,   44.449554, 0, 'Ancestor Yor Waypoint'),
+( 17393, 19, -4594.67,  -11936.1240,   36.185963, 0, 'Ancestor Yor Waypoint'),
+( 17393, 20, -4574.30,  -11893.3506,   26.572578, 0, 'Ancestor Yor Waypoint'),
+( 17393, 21, -4542.13,  -11847.5361,   21.584305, 0, 'Ancestor Yor Waypoint'),
+( 17393, 22, -4514.82,  -11811.0195,   14.145091, 0, 'Ancestor Yor Waypoint'),
+( 17393, 23, -4522.52,  -11743.0654,   17.374144, 0, 'Ancestor Yor Waypoint'),
+( 17393, 24, -4488.64,  -11644.7168,   11.355472, 0, 'Ancestor Yor Waypoint');
+
+
+REPLACE INTO script_texts
+   (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`)
+VALUES
+   (-1050017, 'Come, %s . Let us leave the water together, purified.', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050018, '[Furbolg] We go now, together. We will seek Vark.', '', '', '', '', '', '', '', '', 0, 0, 0, 0, ''),
+   (-1050019, '[Furbolg] Follow me to Vark.', '', '', '', '', '', '', '', '', 0, 0, 0, 0, '');
+
+-- [S37] Hints_of_a_new_Plague_scriptdev2.sql
+	-- Hints of a new Plague
+REPLACE INTO `script_waypoint` (`entry`, `pointid`, `location_x`, `location_y`, `location_z`, `waittime`, `point_comment`) VALUES
+(2713,0,-1427.4, -3035.17 , 32.2, 0, ''),
+(2713,1,-1438.63, -3030.78, 25.18,0,''),
+(2713,2,-1447.25,-3028.73,14.28,0,''),
+(2713,3,-1465.27,-3032.92,12.21,0,''),
+(2713,4,-1486.36,-3033.13,12.79,0,''),
+(2713,5,-1504.73,-3028.49,12.7,0,''),
+(2713,6,-1548.33,-3037.77,13.00,0,''),
+(2713,7,-1524.61,-3037.32,13.34,0,''),
+(2713,8,-1487.13,-3032.53,12.84,0,''),
+(2713,9,-1481.67,-3086.87,13.49,0,''),
+(2713,10,-1460.65,-3090.9,13.34,0,''),
+(2713,11,-1431.11,-3095.58,13.41,0,''),
+(2713,12,-1420.73,-3096.44,20.9,0,''),
+(2713,13,-1414.74,-3095.77,24.62,0,''),
+(2713,14,-1400.30,-3083.43,27.00,0,''),
+(2713,15,-1401.40,-3073.13,29.76,0,''),
+(2713,16,-1404.95,-3061.79,34.04,0,''),
+(2713,17,-1407.75,-3052.81,37.55,0,''),
+(2713,18,-1410.38,-3045.15,37.99,0,''),
+(2713,19,-1416,-3034,35.55,0,'');
+
+-- [S38] Matis_the_Cruel_scriptdev2.sql
+	-- insert text for cut scene "judgement"
+REPLACE INTO `script_texts` (entry,content_default,content_loc1,content_loc2,content_loc3,content_loc4,content_loc5,content_loc6,content_loc7,content_loc8,sound, type,language,emote,comment)VALUES 
+(-1055005,'Bring forth the blood elf.','','','','','','','','',0,0,0,0,'VELEN_IMAGE_1'),
+(-1055006,'Matis, blood elf lieutenant of the Sunhawks, you have been found guilty of genocide against the draenei people.','','','','','','','','',0,0,0,0,'VELEN_IMAGE_2'),
+(-1055007,'You are to be executed at light\'s dawning. Have you anything to say for yourself?','','','','','','','','',0,0,0,0,'VELEN_IMAGE_3'),
+(-1055008,'May the Light have mercy on your soul. Take him back to his cell.','','','','','','','','',0,0,0,0,'VELEN_IMAGE_4'),
+(-1055009,'The Light?','','','','','','','','',0,0,0,0,'MATIS_JUDGED_1'),
+(-1055010,'I am Blood Knight, mongrel. I do not serve the Light, the Light serves me. If mercy is to be granted, it will be by me.','','','','','','','','',0,0,0,0,'MATIS_JUDGED_2'),
+(-1055011,'You seek to martyr me before my order - so be it. Strike me down, another will rise in my place and the suffering of the Light - of the conquered - will continue uninterrupted.','','','','','','','','',0,0,0,0,'MATIS_JUDGED_3'),
+(-1055012,'You blaspheme! The Light would never allow such an aberration!','','','','','','','','',0,0,0,0,'VINDICATOR_KUROS_1'),
+(-1055013,'The Light has no choice. It does as it is commanded. Just as the naaru you hold at the core of your vessel will do when we capture and enslave it... Do my words surprise you, blue blood? Yes, we know... We know everything.','','','','','','','','',0,0,0,0,'MATIS_JUDGED_4'),
+(-1055014,'Take him away.','','','','','','','','',0,0,0,0,'VELEN_IMAGE_5'),
+(-1055015,'Move!','','','','','','','','',0,0,0,0,'BLADE_OF_ARGUS'),
+(-1055016,'Draenei dog! Did you know that the one called Saruan wept like a babe as I beat him? A feeling of euphoria coursed through me, knowing that I had a member of high rank in my grasp. Were it not for Sironas\' plans for him, I would have tortured him to death... As I do to all draenei that I capture. Alas, I am certain that you will see him soon...','','','','','','','','',0,0,0,0,'MATIS_JUDGED_5'),
+(-1055017,'Breathe your last breath, heathen.','','','','','','','','',0,0,0,0,'VINDICATOR_KUROS_2'),
+(-1055018,'Find their source of power and tear it down. Tear it all down.','','','','','','','','',0,0,0,0,'VELEN_IMAGE_6');
+
+	-- insert text for capturing
+REPLACE INTO `script_texts` (entry,content_default,content_loc1,content_loc2,content_loc3,content_loc4,content_loc5,content_loc6,content_loc7,content_loc8,sound, type,language,emote,comment)VALUES 
+(-1055000,'We\'ve got you now, Matis the Cruel!','','','','','','','','',0,0,0,0,'TRACKER_OF_THE_HAND_1'),
+(-1055001,'You will never take me alive!','','','','','','','','',0,0,0,0,'MATIS_THE_CRUEL'),
+(-1055002,'Return to Kuros. I will bring him to Blood Watch.','','','','','','','','',0,0,0,0,'TRACKER_OF_THE_HAND_2');

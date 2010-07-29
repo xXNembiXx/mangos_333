@@ -1829,7 +1829,7 @@ bool InstanceMap::Add(Player *player)
                         GetInstanceSave()->GetDifficulty(), GetInstanceSave()->GetPlayerCount(),
                         GetInstanceSave()->GetGroupCount(), GetInstanceSave()->CanReset());
                     //ASSERT(false);
-					player->RepopAtGraveyard();
+					if (!player->isGameMaster()) player->RepopAtGraveyard();
 					return false;
                 }
             }
@@ -1854,7 +1854,7 @@ bool InstanceMap::Add(Player *player)
                                 groupBind->save->GetMapId(), groupBind->save->GetInstanceId(), groupBind->save->GetDifficulty(),
                                 groupBind->save->GetPlayerCount(), groupBind->save->GetGroupCount(), groupBind->save->CanReset());
                         //ASSERT(false);
-						player->RepopAtGraveyard();
+						if (!player->isGameMaster()) player->RepopAtGraveyard();
 						return false;
                     }
                     // bind to the group or keep using the group save
@@ -1882,7 +1882,7 @@ bool InstanceMap::Add(Player *player)
                             else
                                 sLog.outError("GroupBind save NULL");
                             //ASSERT(false);
-							player->TeleportToHomebind();
+							if (!player->isGameMaster()) player->TeleportToHomebind();
 							return false;
                         }
                         // if the group/leader is permanently bound to the instance
@@ -1904,8 +1904,7 @@ bool InstanceMap::Add(Player *player)
                     else
                         // cannot jump to a different instance without resetting it
                         //ASSERT(playerBind->save == mapSave);
-						player->RepopAtGraveyard();
-						return false;
+						if (!player->isGameMaster()) player->RepopAtGraveyard();
                 }
             }
         }

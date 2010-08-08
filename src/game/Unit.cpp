@@ -256,9 +256,6 @@ Unit::Unit()
 
     m_auraUpdateMask = 0;
     m_vehicleGUID = 0;
-
-    m_ThreatRedirectionPercent = 0;
-    m_misdirectionTargetGUID = 0;
 }
 
 Unit::~Unit()

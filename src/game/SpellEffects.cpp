@@ -6480,7 +6480,19 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     m_caster->CastSpell(unitTarget, 71480, true);
                     return;
                 }
-            }
+				case 43972:
+				case 43375:		// Mixing Blood for Quest 11306 
+                {
+					switch(urand(0, 2))
+					{
+						case 0 : m_caster->CastSpell(m_caster, 43378, true); break;
+						case 1 : m_caster->CastSpell(m_caster, 43376, true); break;
+						case 2 : m_caster->CastSpell(m_caster, 43377, true); break;
+						case 3 : m_caster->CastSpell(m_caster, 43970, true); break;
+					}
+				}
+                break;	
+			}
             break;
         }
         case SPELLFAMILY_WARLOCK:

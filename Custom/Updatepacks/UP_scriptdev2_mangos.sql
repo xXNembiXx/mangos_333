@@ -3,7 +3,7 @@
 #							SQL	Updatepack
 #						world database (from SD2)
 #
-#							  15-07-2010
+#							  19-08-2010
 #
 ############################################################################
 
@@ -1928,3 +1928,43 @@ UPDATE `creature_template` SET ScriptName='npc_tracker_of_the_hand' WHERE entry=
 	-- anpassen der geschwindigkeiten damit die npcs synchron laufen, der 2. eintrag ist für matis, und wirkt nur bei diesem event
 UPDATE `creature_template` SET `MovementType`='0' WHERE (`entry`='17659');
 UPDATE `creature_template` SET `speed_walk` = '1.48' WHERE (`entry` = '17865');
+
+
+-- [S44] Deadmines_Mr_Smite_mangos.sql
+	-- Scriptname
+DELETE FROM `creature_ai_scripts` WHERE `creature_id`='646';
+UPDATE `creature_template` SET `AIName`='',`ScriptName`='boss_mrsmite' WHERE (`entry`='646');
+
+-- [S45] The_Emissary.sql
+	-- quest "The Emissary" (11626)
+
+UPDATE `creature_template` SET `ScriptName`='npc_leviroth' WHERE (`entry`='26452');
+UPDATE `item_template` SET `ScriptName`='trident_of_nazjan' WHERE (`entry`='35850');
+
+-- [S46] Deat_From_Above.sql
+	-- quest "Death From Above" (11889)
+
+UPDATE `creature_template` SET `ScriptName`='npc_scourged_flamespitter' WHERE (`entry`='25582');
+
+-- [S47] Souls_of_the_Decursed
+	--Quest "Souls of the Decursed" (11899)
+
+UPDATE `creature_template` SET `ScriptName`='npc_gnome_soul' WHERE (`entry`='26096');
+
+-- [S51] Harvest_Festival.sql
+	-- quest "Honoring a Hero" (8149)
+UPDATE `item_template` SET `ScriptName`='item_uthers_tribute' WHERE (`entry`='19850');
+
+	-- quest "Honoring a Hero" (8150)
+UPDATE `item_template` SET `ScriptName`='item_groms_tribute' WHERE (`entry`='19851');
+
+-- [S52] HOL_Slag.sql
+	-- NPC Slag in instance Halls of Lightning
+
+UPDATE `creature_template` SET `ScriptName` = 'npc_slag' WHERE `entry` = 28585;
+
+-- [S54] Karazhan.sql
+	-- some fixes for instance Karazhan
+
+UPDATE `creature_template` SET `ScriptName` = 'npc_kara_mana_feeder' WHERE `entry` = 16491;
+UPDATE `creature_template` SET `ScriptName` = 'npc_kara_mana_warp' WHERE `entry` = 16530;

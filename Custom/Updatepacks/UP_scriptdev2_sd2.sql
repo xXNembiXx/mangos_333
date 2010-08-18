@@ -3,7 +3,7 @@
 #							SQL	Updatepack
 #						  ScriptDev2 database
 #
-#							  15-07-2010
+#							  19-08-2010
 #
 ############################################################################
 
@@ -2286,3 +2286,22 @@ REPLACE INTO `script_texts` (entry,content_default,content_loc1,content_loc2,con
 (-1055000,'We\'ve got you now, Matis the Cruel!','','','','','','','','',0,0,0,0,'TRACKER_OF_THE_HAND_1'),
 (-1055001,'You will never take me alive!','','','','','','','','',0,0,0,0,'MATIS_THE_CRUEL'),
 (-1055002,'Return to Kuros. I will bring him to Blood Watch.','','','','','','','','',0,0,0,0,'TRACKER_OF_THE_HAND_2');
+
+-- [S44] Deadmines_Mr_Smite_scriptdev2.sql
+	-- Some Locale Update + Inserts
+UPDATE `script_texts` SET `content_loc3`='Ihr da! Untersucht dieses Geräusch!' WHERE (`entry`='-1036000') ; 
+UPDATE `script_texts` SET `content_loc3`='Wir werden angegriffen! Kommt Ihr Hunde! Wehrt die Eindringlinge ab!' WHERE (`entry`='-1036001');  
+REPLACE INTO `script_texts` (`entry`,`content_default`,`content_loc3`) VALUES ('1036002','You landlubbers are tougher than i thought. I`ll have to improvise!','Ihr Landratten seid zäher, als ich dachte! Ich muss wohl improvisieren!');
+REPLACE INTO `script_texts` (`entry`,`content_default`,`content_loc3`) VALUES ('1036003','D`ah! Now you\'re making me angry!','D`ah! Jetzt macht Ihr mich aber wütend!');
+
+-- [S50] The_Cleansing_scriptdev2.sql
+	-- script texts for quest "The Cleansing"
+
+DELETE FROM `custom_texts` WHERE `entry` IN(-2500001,-2500002,-2500003,-2500004);
+INSERT INTO `custom_texts`
+	(`entry`, `content_default`, `content_loc3`, `sound`, `type`, `language`, `emote`, `comment`)
+VALUES
+	(-2500001, 'Do you think that you get rid of me by meditation?', 'Glaubt ihr, dass ihr mich durch Meditation loswerdet?', 0, 0, 0, 0, 'npc_your_inner_turmoil Spawn 01'),
+	(-2500002, 'Fool! I will defeat you and will finally be, what has grown in you for all the years!', 'Narr! Ich werde Euch vernichten und letztendlich zu dem werden, was all die Jahre in Euch herangewachsen ist!', 0, 0, 0, 0, 'npc_your_inner_turmoil Spawn 02'),
+	(-2500003, 'You can not beat me. I am an indelible part of you!', 'Ihr könnt mich nicht besiegen. Ich bin ein unauslöschlicher Teil von euch!', 0, 0, 0, 0, 'npc_your_inner_turmoil 50%'),
+	(-2500004, 'NOOOOOOO!', 'NEEEEIIIiiiinnnnnn!', 0, 0, 0, 0, 'npc_your_inner_turmoil DEATH');

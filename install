@@ -13,7 +13,7 @@ then
 	"For example ./install live-server ace to compile into live-server with ACE 5.7.5 enabled"
 else
 	# define variables
-	mangosdir='/home/wow/mangos/'
+	mangosdir='/home/mangos/server/'
 	installdir=$1
 	option=$2
 
@@ -37,7 +37,7 @@ else
 		echo "Mangos builtin ACE was used!"
 	fi
 
-	make
+	make -j2
 
 	# this is only an check if there are problems with creating lib directory
 	mkdir $mangosdir$installdir/lib

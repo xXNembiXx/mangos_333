@@ -275,6 +275,9 @@ void Spell::EffectInstaKill(SpellEffectIndex /*eff_idx*/)
     if( !unitTarget || !unitTarget->isAlive() )
         return;
 
+    if(m_spellInfo->Id==52479 && unitTarget->GetTypeId()==TYPEID_PLAYER)
+        return;
+
     if(m_caster == unitTarget)                              // prevent interrupt message
         finish();
 

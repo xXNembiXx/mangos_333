@@ -1323,7 +1323,10 @@ void Creature::setDeathState(DeathState s)
 {
     if ((s == JUST_DIED && !m_isDeadByDefault) || (s == JUST_ALIVED && m_isDeadByDefault))
     {
-        m_deathTimer = m_corpseDelay*IN_MILLISECONDS;
+        if (GetCreatureInfo()->maxgold > 0 || GetCreatureInfo()->lootid || GetCreatureInfo()->SkinLootId)
+             m_deathTimer = m_corpseDelay*IN_MILLISECONDS;
+        else
+             m_deathTimer = MINUTE*IN_MILLISECONDS;	// one minute respawn for all NPC's without loot
 
         // always save boss respawn time at death to prevent crash cheating
         if (sWorld.getConfig(CONFIG_BOOL_SAVE_RESPAWN_TIME_IMMEDIATLY) || isWorldBoss())

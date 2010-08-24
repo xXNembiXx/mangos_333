@@ -1712,82 +1712,215 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
     switch(spellInfo_1->SpellFamilyName)
     {
         case SPELLFAMILY_GENERIC:
-			switch(spellInfo_2->SpellFamilyName)
-			{
-				case SPELLFAMILY_GENERIC:
-				{
-					// Dark Essence & Light Essence
-					if ((spellInfo_1->Id == 65684 && spellInfo_2->Id == 65686) ||
-						(spellInfo_2->Id == 65684 && spellInfo_1->Id == 65686))
-						return true;
+            switch(spellInfo_2->SpellFamilyName)
+            {
+                case SPELLFAMILY_GENERIC:                   // same family case
+                {
+                    // Scroll of Agility Ranks
+                    if( spellInfo_1->SpellIconID == 240 && spellInfo_1->SpellVisual[0] == 78 &&
+                        spellInfo_2->SpellIconID == 240 && spellInfo_2->SpellVisual[0] == 78)
+                        return true;
 
-					//Potent Fungus and Mini must remove each other (Amanitar encounter, Ahn'kahet)
-					if ((spellInfo_1->Id == 57055 && spellInfo_2->Id == 56648) ||
-						(spellInfo_2->Id == 57055 && spellInfo_1->Id == 56648))
-						return true;
+                    // Dark Essence & Light Essence
+                    if ((spellInfo_1->Id == 65684 && spellInfo_2->Id == 65686) ||
+                        (spellInfo_2->Id == 65684 && spellInfo_1->Id == 65686))
+                        return true;
 
-					// Thunderfury
-					if ((spellInfo_1->Id == 21992 && spellInfo_2->Id == 27648) ||
-						(spellInfo_2->Id == 21992 && spellInfo_1->Id == 27648))
-						return false;
+                    //Potent Fungus and Mini must remove each other (Amanitar encounter, Ahn'kahet)
+                    if ((spellInfo_1->Id == 57055 && spellInfo_2->Id == 56648) ||
+                        (spellInfo_2->Id == 57055 && spellInfo_1->Id == 56648))
+                        return true;
 
-					// Lightning Speed (Mongoose) and Fury of the Crashing Waves (Tsunami Talisman)
-					if ((spellInfo_1->Id == 28093 && spellInfo_2->Id == 42084) ||
-						(spellInfo_2->Id == 28093 && spellInfo_1->Id == 42084))
-						return false;
+                    // Thunderfury
+                    if ((spellInfo_1->Id == 21992 && spellInfo_2->Id == 27648) ||
+                        (spellInfo_2->Id == 21992 && spellInfo_1->Id == 27648))
+                        return false;
 
-					// Soulstone Resurrection and Twisting Nether (resurrector)
-					if( spellInfo_1->SpellIconID == 92 && spellInfo_2->SpellIconID == 92 && (
-						spellInfo_1->SpellVisual[0] == 99 && spellInfo_2->SpellVisual[0] == 0 ||
-						spellInfo_2->SpellVisual[0] == 99 && spellInfo_1->SpellVisual[0] == 0 ) )
-						return false;
+                    // Lightning Speed (Mongoose) and Fury of the Crashing Waves (Tsunami Talisman)
+                    if ((spellInfo_1->Id == 28093 && spellInfo_2->Id == 42084) ||
+                        (spellInfo_2->Id == 28093 && spellInfo_1->Id == 42084))
+                        return false;
 
-					// Heart of the Wild, Agility and various Idol Triggers
-					if(spellInfo_1->SpellIconID == 240 && spellInfo_2->SpellIconID == 240)
-						return false;
+                    // Soulstone Resurrection and Twisting Nether (resurrector)
+                    if( spellInfo_1->SpellIconID == 92 && spellInfo_2->SpellIconID == 92 && (
+                        spellInfo_1->SpellVisual[0] == 99 && spellInfo_2->SpellVisual[0] == 0 ||
+                        spellInfo_2->SpellVisual[0] == 99 && spellInfo_1->SpellVisual[0] == 0 ) )
+                        return false;
 
-					// Personalized Weather (thunder effect should overwrite rainy aura)
-					if(spellInfo_1->SpellIconID == 2606 && spellInfo_2->SpellIconID == 2606)
-						return false;
+                    // Heart of the Wild, Agility and various Idol Triggers
+                    if(spellInfo_1->SpellIconID == 240 && spellInfo_2->SpellIconID == 240)
+                        return false;
 
-					// Brood Affliction: Bronze
-					if( (spellInfo_1->Id == 23170 && spellInfo_2->Id == 23171) ||
-						(spellInfo_2->Id == 23170 && spellInfo_1->Id == 23171) )
-						return false;
+                    // Personalized Weather (thunder effect should overwrite rainy aura)
+                    if(spellInfo_1->SpellIconID == 2606 && spellInfo_2->SpellIconID == 2606)
+                        return false;
 
-					// Cool Down (See PeriodicAuraTick())
-					if ((spellInfo_1->Id == 52441 && spellInfo_2->Id == 52443) ||
-						(spellInfo_2->Id == 52441 && spellInfo_1->Id == 52443))
-						return false;
+                    // Brood Affliction: Bronze
+                    if( (spellInfo_1->Id == 23170 && spellInfo_2->Id == 23171) ||
+                        (spellInfo_2->Id == 23170 && spellInfo_1->Id == 23171) )
+                        return false;
 
-					// See Chapel Invisibility and See Noth Invisibility
-					if( (spellInfo_1->Id == 52950 && spellInfo_2->Id == 52707) ||
-						(spellInfo_2->Id == 52950 && spellInfo_1->Id == 52707) )
-						return false;
+                    // Cool Down (See PeriodicAuraTick())
+                    if ((spellInfo_1->Id == 52441 && spellInfo_2->Id == 52443) ||
+                        (spellInfo_2->Id == 52441 && spellInfo_1->Id == 52443))
+                        return false;
 
-					// Regular and Night Elf Ghost
-					if( (spellInfo_1->Id == 8326 && spellInfo_2->Id == 20584) ||
-						(spellInfo_2->Id == 8326 && spellInfo_1->Id == 20584) )
-						return false;
+                    // See Chapel Invisibility and See Noth Invisibility
+                    if( (spellInfo_1->Id == 52950 && spellInfo_2->Id == 52707) ||
+                        (spellInfo_2->Id == 52950 && spellInfo_1->Id == 52707) )
+                        return false;
 
-					// Kindred Spirits
-					if( spellInfo_1->SpellIconID == 3559 && spellInfo_2->SpellIconID == 3559 )
-						return false;
+                    // Regular and Night Elf Ghost
+                    if( (spellInfo_1->Id == 8326 && spellInfo_2->Id == 20584) ||
+                        (spellInfo_2->Id == 8326 && spellInfo_1->Id == 20584) )
+                         return false;
 
-					// Fury of Frostmourne
-					if( spellInfo_1->SpellIconID == 2702 && spellInfo_2->SpellIconID == 2702 || 
-						spellInfo_2->SpellIconID == 2702 && spellInfo_1->SpellIconID == 2702 )
-						return false;
-					break;
-				}
-				case SPELLFAMILY_MAGE:
-				{
+                    // Sextant of Unstable Currents and Band of the Eternal Sage
+                    if( spellInfo_1->SpellIconID == 502 && spellInfo_2->SpellIconID == 502 )
+                        return false;
+
+                    // Lightning Speed and Crushing Waves
+                    if( spellInfo_1->SpellIconID == 2010 && spellInfo_2->SpellIconID == 2010 )
+                        return false;
+
+                    // Burning Bile and Paralytic Toxin
+                    if( spellInfo_1->SpellIconID == 1719 && spellInfo_2->SpellIconID == 2998 ||
+                        spellInfo_2->SpellIconID == 1719 && spellInfo_1->SpellIconID == 2998 )
+                        return true;
+
+                    // Kindred Spirits
+                    if( spellInfo_1->SpellIconID == 3559 && spellInfo_2->SpellIconID == 3559 )
+                        return false;
+
+                    // Fury of Frostmourne
+                    if( spellInfo_1->SpellIconID == 2702 && spellInfo_2->SpellIconID == 2702 || 
+                        spellInfo_2->SpellIconID == 2702 && spellInfo_1->SpellIconID == 2702 )
+                        return false;
+
+                    //Solace of the Defeated Heroic & Normal versions
+                    if( (spellInfo_1->Id == 67696 && spellInfo_2->Id == 67750) ||
+                        (spellInfo_2->Id == 67696 && spellInfo_1->Id == 67750) )
+                        return false;
+
+                    break;
+                }
+                case SPELLFAMILY_MAGE:
+                    // Arcane Intellect and Insight
+                    if( spellInfo_2->SpellIconID == 125 && spellInfo_1->Id == 18820 )
+                        return false;
+
 					// Ignite and Molten
 					if (spellInfo_1->Id == 12654 && spellInfo_2->SpellIconID == 937)
 						return false;
-					break;
-				}
-			}
+                    break;
+                case SPELLFAMILY_WARRIOR:
+                {
+                    // Scroll of Protection and Defensive Stance (multi-family check)
+                    if( spellInfo_1->SpellIconID == 276 && spellInfo_1->SpellVisual[0] == 196 && spellInfo_2->Id == 71)
+                        return false;
+
+                    // Improved Hamstring -> Hamstring (multi-family check)
+                    if( (spellInfo_2->SpellFamilyFlags & UI64LIT(0x2)) && spellInfo_1->Id == 23694 )
+                        return false;
+
+                    break;
+                }
+                case SPELLFAMILY_PRIEST:
+                {
+                    // Runescroll of Fortitude & Prayer/PW  Fortitude can't stack
+                    if (spellInfo_1->Id == 72590 && spellInfo_2->SpellVisual[0] == 278)
+                        return true;
+                }
+                case SPELLFAMILY_DRUID:
+                {
+                    // Scroll of Stamina and Leader of the Pack (multi-family check)
+                    if( spellInfo_1->SpellIconID == 312 && spellInfo_1->SpellVisual[0] == 216 && spellInfo_2->Id == 24932 )
+                        return false;
+
+                    // Dragonmaw Illusion (multi-family check)
+                    if (spellId_1 == 40216 && spellId_2 == 42016 )
+                        return false;
+
+                    // Innervate and Energized (multi-family check)
+                    if (spellId_1 == 67385 && spellId_2 == 29166 )
+                        return false;
+					
+                    break;
+                }
+                case SPELLFAMILY_ROGUE:
+                {
+                    // Garrote-Silence -> Garrote (multi-family check)
+                    if( spellInfo_1->SpellIconID == 498 && spellInfo_1->SpellVisual[0] == 0 && spellInfo_2->SpellIconID == 498  )
+                        return false;
+
+                    // Killing Spree
+                    if( spellInfo_1->Id == 61851 && spellInfo_2->Id == 51690)
+                        return false;
+
+                     // Overkill and Fatal Flaws
+                     if ((spellInfo_1->SpellIconID == 2285 && spellInfo_2->Id == 71403) ||
+                         (spellInfo_2->SpellIconID == 2285 && spellInfo_1->Id == 71403) )
+                        return false;
+
+                    break;
+                }
+                case SPELLFAMILY_WARLOCK:
+                {
+                    // Shadowflame and Glyph of Shadowflame
+                    if( (spellInfo_1->Id == 63311 && spellInfo_2->SpellIconID == 3317) ||
+                        (spellInfo_2->Id == 63311 && spellInfo_1->SpellIconID == 3317) )
+                        return false;
+						
+                    // Blood Pact and Blood Drinker
+                    if( spellInfo_1->Id == 70855 && spellInfo_2->SpellIconID == 541)
+                        return false;
+
+                    break;
+                }
+                case SPELLFAMILY_HUNTER:
+                {
+                    // Concussive Shot and Imp. Concussive Shot (multi-family check)
+                    if( spellInfo_1->Id == 19410 && spellInfo_2->Id == 5116 )
+                        return false;
+
+                    // Improved Wing Clip -> Wing Clip (multi-family check)
+                    if( (spellInfo_2->SpellFamilyFlags & UI64LIT(0x40)) && spellInfo_1->Id == 19229 )
+                        return false;
+                    break;
+                }
+                case SPELLFAMILY_PALADIN:
+                {
+                    // Unstable Currents and other -> *Sanctity Aura (multi-family check)
+                    if( spellInfo_2->SpellIconID==502 && spellInfo_1->SpellIconID==502 && spellInfo_1->SpellVisual[0]==969 )
+                        return false;
+
+                    // *Band of Eternal Champion and Seal of Command(multi-family check)
+                    if( spellId_1 == 35081 && spellInfo_2->SpellIconID==561 && spellInfo_2->SpellVisual[0]==7992)
+                        return false;
+
+                    // Blessing of Sanctuary (multi-family check, some from 16 spell icon spells)
+                    if (spellInfo_1->Id == 67480 && spellInfo_2->Id == 20911)
+                        return false;
+
+                    // Ardent Defender and Libram of Obstruction
+                    if (spellInfo_1->SpellIconID == 2135 && spellInfo_2->SpellIconID == 2135)
+                       return false;
+
+                    // Seal of Command and Frostforged Champion (multi-family check)
+                    if (spellInfo_1->Id == 72412 && spellInfo_2->SpellIconID == 561)
+                       return false;
+					   
+                    // Hardened Skin and Devotion Aura (multi-family check)
+                    if (spellInfo_1->Id == 71586 && spellInfo_2->SpellIconID == 291)
+                       return false;
+					   
+                    // Aegis and Holy Shield (multi-family check)
+                    if (spellInfo_1->Id == 67631 && spellInfo_2->SpellIconID == 453)
+                       return false;
+					   
+                    break;
+                }
+            }
             // Dragonmaw Illusion, Blood Elf Illusion, Human Illusion, Illidari Agent Illusion, Scarlet Crusade Disguise
             if(spellInfo_1->SpellIconID == 1691 && spellInfo_2->SpellIconID == 1691)
                 return false;
@@ -1822,6 +1955,24 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
 			// Ignite and Molten
 			if (spellInfo_1->Id == 12654 && spellInfo_2->SpellIconID == 937)
 				return false;
+
+            // Detect Invisibility and Mana Shield (multi-family check)
+            if( spellInfo_2->Id == 132 && spellInfo_1->SpellIconID == 209 && spellInfo_1->SpellVisual[0] == 968 )
+                return false;
+
+            // Combustion and Fire Protection Aura (multi-family check)
+            if( spellInfo_1->Id == 11129 && spellInfo_2->SpellIconID == 33 && spellInfo_2->SpellVisual[0] == 321 )
+                return false;
+
+            // Arcane Intellect and Insight
+            if( spellInfo_1->SpellIconID == 125 && spellInfo_2->Id == 18820 )
+                return false;
+
+            // Arcane Missiles and Moonfire
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_DRUID )
+                if( spellInfo_1->SpellIconID == 225 && spellInfo_2->SpellIconID == 225)
+                    return false;
+
             break;
         case SPELLFAMILY_WARLOCK:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_WARLOCK )
@@ -1855,6 +2006,20 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if( spellInfo_2->SpellIconID == 1985 && spellInfo_1->SpellIconID == 1985 && spellInfo_1->SpellVisual[0] == 9750 )
                     return false;
             }
+            // Detect Invisibility and Mana Shield (multi-family check)
+            if( spellInfo_1->Id == 132 && spellInfo_2->SpellIconID == 209 && spellInfo_2->SpellVisual[0] == 968 )
+                return false;
+				
+            // Shadow Protection and Shadow Ward
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_PRIEST )
+                if( spellInfo_1->SpellIconID == 207 && spellInfo_2->SpellIconID == 207)
+                    return false;
+					
+            // Blood Pact and Blood Drinker
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_GENERIC )
+                    if( spellInfo_1->SpellIconID == 541 && spellInfo_2->Id == 70855)
+                        return false;
+						
             break;
         case SPELLFAMILY_WARRIOR:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_WARRIOR )
@@ -1864,16 +2029,35 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                     (spellInfo_2->SpellFamilyFlags & UI64LIT(0x20)) && (spellInfo_1->SpellFamilyFlags & UI64LIT(0x1000000000)) )
                     return false;
 
-                // Battle Shout and Rampage
-                if( (spellInfo_1->SpellIconID == 456 && spellInfo_2->SpellIconID == 2006) ||
-                    (spellInfo_2->SpellIconID == 456 && spellInfo_1->SpellIconID == 2006) )
-                    return false;
-
                 // Taste of Blood and Sudden Death
                 if( (spellInfo_1->Id == 52437 && spellInfo_2->Id == 60503) ||
                     (spellInfo_2->Id == 52437 && spellInfo_1->Id == 60503) )
                     return false;
+
+                // Battle Shout and Rampage
+                if( (spellInfo_1->SpellIconID == 456 && spellInfo_2->SpellIconID == 2006) ||
+                    (spellInfo_2->SpellIconID == 456 && spellInfo_1->SpellIconID == 2006) )
+                    return false;
             }
+
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_DRUID )
+            {   // Rip and Flurry
+                if (spellInfo_1->SpellIconID == 108 && spellInfo_2->SpellIconID == 108)
+                    return false;
+            }
+			
+            // Hamstring -> Improved Hamstring (multi-family check)
+            if( (spellInfo_1->SpellFamilyFlags & UI64LIT(0x2)) && spellInfo_2->Id == 23694 )
+                return false;
+
+            // Defensive Stance and Scroll of Protection (multi-family check)
+            if( spellInfo_1->Id == 71 && spellInfo_2->SpellIconID == 276 && spellInfo_2->SpellVisual[0] == 196 )
+                return false;
+
+            // Bloodlust and Bloodthirst (multi-family check)
+            if( spellInfo_2->Id == 2825 && spellInfo_1->SpellIconID == 38 && spellInfo_1->SpellVisual[0] == 0 )
+                return false;
+
             break;
         case SPELLFAMILY_PRIEST:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_PRIEST )
@@ -1891,11 +2075,33 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if ((spellInfo_1->Id == 47585 && spellInfo_2->Id == 60069) ||
                     (spellInfo_2->Id == 47585 && spellInfo_1->Id == 60069))
                     return false;
+
+                if ((spellInfo_1->Id == 15473 && spellInfo_2->Id == 71167) ||
+                    (spellInfo_2->Id == 15473 && spellInfo_1->Id == 71167))
+                    return false;
+                
+                if ((spellInfo_1->Id == 49868 && spellInfo_2->Id == 71167) ||
+                    (spellInfo_2->Id == 49868 && spellInfo_1->Id == 71167))
+                    return false;
+
                 // Power Word: Shield and Divine Aegis
                 if ((spellInfo_1->SpellIconID == 566 && spellInfo_2->SpellIconID == 2820) ||
                     (spellInfo_2->SpellIconID == 566 && spellInfo_1->SpellIconID == 2820))
                     return false;
             }
+            //Improved Mind Blast and Berserks
+            if ( spellInfo_1->Id == 48301 && spellInfo_2->SpellIconID == 95 ) 
+                return false;
+
+            // Prayer/PW  Fortitude && Runescroll of Fortitude can't stack
+            if (spellInfo_1->SpellVisual[0] == 278 && spellInfo_2->Id == 72590)
+                return true;
+				
+            // Shadow Protection and Shadow Ward
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_WARLOCK )
+                if( spellInfo_1->SpellIconID == 207 && spellInfo_2->SpellIconID == 207)
+                    return false;
+
             break;
         case SPELLFAMILY_DRUID:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_DRUID )
@@ -1947,12 +2153,42 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 // Frenzied Regeneration and Savage Defense
                 if( spellInfo_1->Id == 22842 && spellInfo_2->Id == 62606 || spellInfo_2->Id == 22842 && spellInfo_1->Id == 62606 )
                     return false;
-
-                // Lacerate and Moonfire
-                if((spellInfo_1->SpellIconID == 225 && spellInfo_2->SpellIconID == 2246) ||
-                   (spellInfo_2->SpellIconID == 225 && spellInfo_1->SpellIconID == 2246))
-                   return false;
             }
+
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_WARRIOR )
+            {
+                // Rip and Flurry
+                if (spellInfo_1->SpellIconID == 108 && spellInfo_2->SpellIconID == 108)
+                    return false;
+            }
+
+            // Leader of the Pack and Scroll of Stamina (multi-family check)
+            if( spellInfo_1->Id == 24932 && spellInfo_2->SpellIconID == 312 && spellInfo_2->SpellVisual[0] == 216 )
+                return false;
+
+            // Dragonmaw Illusion (multi-family check)
+            if (spellId_1 == 42016 && spellId_2 == 40216 )
+                return false;
+
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_GENERIC )
+            {
+                // Innervate and Energized (multi-family check)
+                if (spellId_1 == 29166 && spellId_2 == 67385 )
+                    return false;
+            }
+			
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_SHAMAN )
+            {
+                // Rip and Flurry(Shaman)
+                if (spellInfo_1->SpellIconID == 108 && spellInfo_2->SpellIconID == 108)
+                    return false;
+            }
+			
+            // Arcane Missiles and Moonfire
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_MAGE )
+                if( spellInfo_1->SpellIconID == 225 && spellInfo_2->SpellIconID == 225)
+                    return false;
+					
             break;
         case SPELLFAMILY_ROGUE:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_ROGUE )
@@ -1967,6 +2203,18 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                     spellInfo_2->Category == 44 && spellInfo_1->Category == 0))
                     return false;
             }
+
+            //Overkill
+            if( spellInfo_1->SpellIconID == 2285 && spellInfo_2->SpellIconID == 2285 )
+                return false;
+
+            //Tricks of Trade
+            if( spellInfo_1->SpellIconID == 3413 && spellInfo_2->SpellIconID == 3413 )
+                return false;
+
+            // Garrote -> Garrote-Silence (multi-family check)
+            if( spellInfo_1->SpellIconID == 498 && spellInfo_2->SpellIconID == 498 && spellInfo_2->SpellVisual[0] == 0 )
+                return false;
             break;
         case SPELLFAMILY_HUNTER:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_HUNTER )
@@ -1989,6 +2237,14 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if( spellInfo_1->SpellIconID == 1680 && spellInfo_2->SpellIconID == 1680 )
                     return false;
             }
+
+            // Wing Clip -> Improved Wing Clip (multi-family check)
+            if( (spellInfo_1->SpellFamilyFlags & UI64LIT(0x40)) && spellInfo_2->Id == 19229 )
+                return false;
+
+            // Concussive Shot and Imp. Concussive Shot (multi-family check)
+            if( spellInfo_2->Id == 19410 && spellInfo_1->Id == 5116 )
+                return false;
             break;
         case SPELLFAMILY_PALADIN:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_PALADIN )
@@ -2018,8 +2274,54 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if (spellInfo_1->SpellIconID == 2292 && spellInfo_2->SpellIconID == 2292)
                     return false;
 
+                // Holy Vengeance and Righteous Vengeance
+                if ((spellInfo_2->Id == 61840 && spellInfo_1->Id == 31803) ||
+                    (spellInfo_1->Id == 61840 && spellInfo_2->Id == 31803))
+                    return false;
+
                 // Divine Sacrifice and Divine Guardian
                 if (spellInfo_1->SpellIconID == 3837 && spellInfo_2->SpellIconID == 3837)
+                    return false;
+
+                // Blood Corruption and Righteous Vengeance
+                if ((spellInfo_2->Id == 61840 && spellInfo_1->Id == 53742) ||
+                    (spellInfo_1->Id == 61840 && spellInfo_2->Id == 53742))
+                    return false;
+            }
+
+            // Inner Fire and Consecration
+            if(spellInfo_2->SpellFamilyName == SPELLFAMILY_PRIEST)
+                if(spellInfo_1->SpellIconID == 51 && spellInfo_2->SpellIconID == 51)
+                return false;
+
+            // Blessing of Sanctuary (multi-family check, some from 16 spell icon spells)
+            if (spellInfo_2->Id == 67480 && spellInfo_1->Id == 20911)
+                return false;
+
+            // Combustion and Fire Protection Aura (multi-family check)
+            if( spellInfo_2->Id == 11129 && spellInfo_1->SpellIconID == 33 && spellInfo_1->SpellVisual[0] == 321 )
+                return false;
+
+            // *Sanctity Aura -> Unstable Currents and other (multi-family check)
+            if( spellInfo_1->SpellIconID==502 && spellInfo_2->SpellFamilyName == SPELLFAMILY_GENERIC && spellInfo_2->SpellIconID==502 && spellInfo_2->SpellVisual[0]==969 )
+                return false;
+
+            // *Seal of Command and Band of Eternal Champion (multi-family check)
+            if( spellInfo_1->SpellIconID==561 && spellInfo_1->SpellVisual[0]==7992 && spellId_2 == 35081)
+                return false;
+
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_GENERIC )
+            {
+                // Seal of Command and Frostforged Champion (multi-family check)
+                if( spellInfo_1->SpellIconID == 561 && spellInfo_2->Id == 72412 )
+                    return false;
+					
+                // Hardened Skin and Devotion Aura (multi-family check)
+                if( spellInfo_1->SpellIconID == 291 && spellInfo_2->Id == 71586 )
+                    return false;
+					
+                // Aegis and Holy Shield (multi-family check)
+                if( spellInfo_1->SpellIconID == 453 && spellInfo_2->Id == 67631 )
                     return false;
             }
             break;
@@ -2039,6 +2341,17 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if (spellInfo_1->SpellIconID == 2019 && spellInfo_2->SpellIconID == 2019)
                     return false;
             }
+            // Bloodlust and Bloodthirst (multi-family check)
+            if( spellInfo_1->Id == 2825 && spellInfo_2->SpellIconID == 38 && spellInfo_2->SpellVisual[0] == 0 )
+                return false;
+			
+            if( spellInfo_2->SpellFamilyName == SPELLFAMILY_DRUID )
+            {   
+                // Rip and Flurry(Shaman)
+                if (spellInfo_1->SpellIconID == 108 && spellInfo_2->SpellIconID == 108)
+                    return false;
+            }
+			
             break;
         case SPELLFAMILY_DEATHKNIGHT:
             if (spellInfo_2->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT)
@@ -2059,7 +2372,7 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if (spellInfo_1->SpellIconID == 2636 && spellInfo_2->SpellIconID == 2636)
                     return false;
 
-                 // Ebon Plague must replace Crypt Fever.
+                // Ebon Plague must replace Crypt Fever.
                 if ( (spellInfo_1->Attributes & 0x40000) && (spellInfo_1->AttributesEx & 0x8) &&
                      (spellInfo_2->Attributes & 0x10) && (spellInfo_2->AttributesEx3 & 0x40000000) )
                     return true;
@@ -2081,12 +2394,6 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
             break;
     }
 
-    if (spellInfo_1->SpellFamilyName == 0 || spellInfo_2->SpellFamilyName == 0)
-        return false;
-
-    if (spellInfo_1->SpellFamilyName != spellInfo_2->SpellFamilyName)
-        return false;
-
     // more generic checks
     if (spellInfo_1->SpellIconID == spellInfo_2->SpellIconID &&
         spellInfo_1->SpellIconID != 0 && spellInfo_2->SpellIconID != 0)
@@ -2107,6 +2414,12 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
 
     if (IsRankSpellDueToSpell(spellInfo_1, spellId_2))
         return true;
+
+    if (spellInfo_1->SpellFamilyName == 0 || spellInfo_2->SpellFamilyName == 0)
+        return false;
+
+    if (spellInfo_1->SpellFamilyName != spellInfo_2->SpellFamilyName)
+        return false;
 
     bool dummy_only = true;
     for (int i = 0; i < MAX_EFFECT_INDEX; ++i)

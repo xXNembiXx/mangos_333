@@ -538,7 +538,7 @@ void Map::Update(const uint32 &t_diff)
     {
         Player* plr = m_mapRefIter->getSource();
 
-        if(!plr->IsInWorld())
+        if(!plr || !plr->IsInWorld())
             continue;
 
         CellPair standing_cell(MaNGOS::ComputeCellPair(plr->GetPositionX(), plr->GetPositionY()));

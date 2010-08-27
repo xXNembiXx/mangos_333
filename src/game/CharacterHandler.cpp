@@ -38,6 +38,8 @@
 #include "Util.h"
 #include "ArenaTeam.h"
 #include "Language.h"
+#include "GMTicketMgr.h"
+#include "Chat.h"
 
 // config option SkipCinematics supported values
 enum CinematicsSkipMode
@@ -784,6 +786,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
 
     if(pCurrChar->isGameMaster())
         SendNotification(LANG_GM_ON);
+
+	if(pCurrChar->isAcceptTickets())
+	{
+		size_t tCount = sTicketMgr.GetAssignedTicketCount(GUID_LOPART(pCurrChar->GetGUID()), GetSecurity());
+		if (tCount)
+			ChatHandler(this).PSendSysMessage(LANG_COMMAND_ATICKETCOUNT, tCount);
+	}
 
     std::string IP_str = GetRemoteAddress();
     sLog.outChar("Account: %d (IP: %s) Login Character:[%s] (guid: %u)",

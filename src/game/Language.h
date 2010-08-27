@@ -863,6 +863,8 @@ enum MangosStrings
 
     // Use for not-in-offcial-sources patches
     //                                    10000-10999
+	LANG_COMMAND_ATICKETCOUNT			= 10000,
+
     // opvp hp
     LANG_OPVP_HP_CAPTURE_OVERLOOK_H     = 10001,
     LANG_OPVP_HP_CAPTURE_OVERLOOK_A     = 10002,

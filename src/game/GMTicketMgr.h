@@ -31,7 +31,7 @@ class GMTicket
         {
         }
 
-        GMTicket(uint32 guid, const std::string& text, const std::string& responsetext, time_t update, uint8 closed) : m_guid(guid), m_text(text), m_responseText(responsetext), m_lastUpdate(update), m_closed(closed)
+        GMTicket(uint32 guid, const std::string& text, const std::string& responsetext, time_t update, uint8 closed, uint32 assignedGuid, uint8 assignedSecLevel) : m_guid(guid), m_text(text), m_responseText(responsetext), m_lastUpdate(update), m_closed(closed), m_assignedGuid(assignedGuid), m_assignedSecLevel(assignedSecLevel)
         {
 
         }
@@ -45,6 +45,28 @@ class GMTicket
         {
             return m_responseText.c_str();
         }
+		
+		const uint32 GetAssignedGuid() const
+		{
+			return m_assignedGuid;
+		}
+		
+		void SetAssignedGuid(uint32 guid)
+		{
+			m_assignedGuid = guid;
+			CharacterDatabase.PExecute("UPDATE character_ticket SET assigned_guid = '%u' WHERE guid = '%u'", m_assignedGuid, m_guid);
+		}
+
+		const uint8 GetAssignedSecLevel() const
+		{
+			return m_assignedSecLevel;
+		}
+
+		void SetAssignedSecLevel(uint8 secLevel)
+		{
+			m_assignedSecLevel = secLevel;
+			CharacterDatabase.PExecute("UPDATE character_ticket SET assigned_sec_level = '%i' WHERE guid = '%u'", m_assignedSecLevel, m_guid);
+		}
 
         uint64 GetLastUpdate() const
         {
@@ -89,7 +111,7 @@ class GMTicket
             std::string escapedString2 = m_responseText;
             CharacterDatabase.escape_string(escapedString2);
 
-            CharacterDatabase.PExecute("INSERT INTO character_ticket (guid, ticket_text, response_text, closed) VALUES ('%u', '%s', '%s', '0')", m_guid, escapedString.c_str(), escapedString2.c_str());
+            CharacterDatabase.PExecute("INSERT INTO character_ticket (guid, ticket_text, response_text, closed, assigned_guid, assigned_sec_level) VALUES ('%u', '%s', '%s', 0, '%u', '%i')", m_guid, escapedString.c_str(), escapedString2.c_str(), m_assignedGuid, m_assignedSecLevel);
             CharacterDatabase.CommitTransaction();
         }
     private:
@@ -98,6 +120,8 @@ class GMTicket
         std::string m_responseText;
         time_t m_lastUpdate;
         uint8 m_closed;
+		uint32 m_assignedGuid;
+		uint8 m_assignedSecLevel;
 };
 typedef std::map<uint32, GMTicket> GMTicketMap;
 
@@ -121,6 +145,15 @@ class GMTicketMgr
         {
             return m_GMTicketMap.size();
         }
+		
+		size_t GetAssignedTicketCount(uint32 aGuid, uint8 aLevel) const
+		{
+			uint32 count = 0;
+			for (GMTicketMap::const_iterator itr = m_GMTicketMap.begin(); itr != m_GMTicketMap.end(); ++itr)
+				if (aGuid && aGuid == itr->second.GetAssignedGuid() || aLevel && aLevel == itr->second.GetAssignedSecLevel())
+					++count;
+			return count;
+		}
 
         void Close(uint32 guid)
         {
@@ -135,7 +168,7 @@ class GMTicketMgr
 
         void Create(uint32 guid, const char* text)
         {
-            GMTicket t = GMTicket(guid, text, "", time(NULL), 0);
+            GMTicket t = GMTicket(guid, text, "", time(NULL), 0, NULL, NULL);
             t.SaveToDB();
             m_GMTicketMap[guid] = t;
         }

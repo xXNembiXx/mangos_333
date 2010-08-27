@@ -2228,7 +2228,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
 }
 
 //show tickets
-void ChatHandler::ShowTicket(uint64 guid, char const* text, char const* time)
+void ChatHandler::ShowTicket(uint64 guid, char const* text, char const* time, uint64 aGuid, uint8 aLevel)
 {
     std::string name;
     if (!sObjectMgr.GetPlayerNameByGUID(guid, name))
@@ -2236,7 +2236,11 @@ void ChatHandler::ShowTicket(uint64 guid, char const* text, char const* time)
 
     std::string nameLink = playerLink(name);
 
-    PSendSysMessage(LANG_COMMAND_TICKETVIEW, nameLink.c_str(),time,text);
+	std::string assignedStr;
+	if(!sObjectMgr.GetPlayerNameByGUID(aGuid,assignedStr) && !aLevel)
+        assignedStr = "no one";
+		
+    PSendSysMessage(LANG_COMMAND_TICKETVIEW, nameLink.c_str(),time,assignedStr.c_str(),aLevel,text);
 }
 
 //ticket commands
@@ -2261,6 +2265,29 @@ bool ChatHandler::HandleTicketCommand(const char* args)
         PSendSysMessage(LANG_COMMAND_TICKETCOUNT, count, accept ?  GetMangosString(LANG_ON) : GetMangosString(LANG_OFF));
         return true;
     }
+
+	bool isAssigned = false;
+	if(strncmp(px,"a",2) == 0)
+	{
+		if(!m_session)
+        {
+            SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            SetSentErrorMessage(true);
+            return false;
+        }
+
+		// use second arg
+		px = strtok(NULL, " ");
+
+		if (!px)
+		{
+			size_t count = sTicketMgr.GetAssignedTicketCount(GUID_LOPART(m_session->GetPlayer()->GetGUID()), m_session->GetSecurity());
+			bool accept = m_session->GetPlayer()->isAcceptTickets();
+			PSendSysMessage(LANG_COMMAND_TICKETCOUNT, count, accept ?  GetMangosString(LANG_ON) : GetMangosString(LANG_OFF));
+			return true;
+		}
+		isAssigned = true;
+	}
 
     // ticket on
     if (strncmp(px, "on", 3) == 0)
@@ -2297,7 +2324,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
     {
         char *name = strtok(NULL, " ");
 
-        if (!name)
+        if(!name)
         {
             SendSysMessage(LANG_CMD_SYNTAX);
             SetSentErrorMessage(true);
@@ -2307,7 +2334,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
         std::string plName = name;
         uint64 guid = sObjectMgr.GetPlayerGUIDByName(plName);
 
-        if (!guid)
+        if(!guid)
         {
             SendSysMessage(LANG_PLAYER_NOT_FOUND);
             SetSentErrorMessage(true);
@@ -2316,7 +2343,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
 
         GMTicket* ticket = sTicketMgr.GetGMTicket(GUID_LOPART(guid));
 
-        if (!ticket)
+        if(!ticket)
         {
             PSendSysMessage(LANG_COMMAND_TICKETNOTEXIST, GUID_LOPART(guid));
             SetSentErrorMessage(true);
@@ -2325,7 +2352,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
 
         char* response = strtok(NULL, "");
 
-        if (!response)
+        if(!response)
         {
             SendSysMessage(LANG_CMD_SYNTAX);
             SetSentErrorMessage(true);
@@ -2334,17 +2361,106 @@ bool ChatHandler::HandleTicketCommand(const char* args)
 
         ticket->SetResponseText(response);
 
-        if (Player* pl = sObjectMgr.GetPlayer(guid))
+        if(Player* pl = sObjectMgr.GetPlayer(guid))
             pl->GetSession()->SendGMResponse(ticket);
 
         return true;
     }
 
+	// ticket assign
+    if(strncmp(px, "assign", 7) == 0)
+	{
+		char *name = strtok(NULL, " ");
+
+        if(!name)
+        {
+            SendSysMessage(LANG_CMD_SYNTAX);
+            SetSentErrorMessage(true);
+            return false;
+        }
+
+        std::string plName = name;
+        uint64 guid = sObjectMgr.GetPlayerGUIDByName(plName);
+
+        if(!guid)
+        {
+            SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            SetSentErrorMessage(true);
+            return false;
+        }
+
+		// get playerpointer
+		Player* pl = sObjectMgr.GetPlayer(guid);
+
+		// check if player is Gamemaster
+		if(!pl && !pl->isGameMaster())
+		{
+			SetSentErrorMessage(true);
+			return false;
+		}
+
+        GMTicket* ticket = sTicketMgr.GetGMTicket(GUID_LOPART(guid));
+
+        if(!ticket)
+        {
+            PSendSysMessage(LANG_COMMAND_TICKETNOTEXIST, GUID_LOPART(guid));
+            SetSentErrorMessage(true);
+            return false;
+        }
+
+		bool hasArg = false;
+		for (int32 i = 0; i < 2; ++i)
+		{
+			char *arg = strtok(NULL, " ");
+			if (!arg)
+				break;
+			
+			if (strncmp(arg,"del",4) == 0)
+			{
+				ticket->SetAssignedGuid(0);
+				ticket->SetAssignedSecLevel(0);
+				return true;
+			}
+
+			int gm = atoi(arg);
+			if (gm > 0)
+			{
+				ticket->SetAssignedSecLevel(gm);
+				hasArg = true;
+				continue;
+			}
+
+			uint64 atarget_guid;
+			if(extractPlayerTarget(arg,NULL,&atarget_guid))
+			{
+				ticket->SetAssignedGuid(GUID_LOPART(atarget_guid));
+				hasArg = true;
+			}
+		}
+
+		if(!hasArg)
+		{
+			SendSysMessage(LANG_CMD_SYNTAX);
+            SetSentErrorMessage(true);
+            return false;
+		}
+
+		// notify player
+		if(Player* pl = sObjectMgr.GetPlayer(MAKE_NEW_GUID(guid, 0, HIGHGUID_PLAYER)))
+			pl->GetSession()->SendGMTicketGetTicket(0x06, ticket->GetText(), true);
+		
+		return true;
+	}
+
     // ticket #num
     int num = atoi(px);
     if (num > 0)
     {
-        QueryResult *result = CharacterDatabase.PQuery("SELECT guid,ticket_text,ticket_lastchange FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_, num-1);
+		QueryResult *result = NULL;
+		if (isAssigned)
+			result = CharacterDatabase.PQuery("SELECT guid,ticket_text,ticket_lastchange,assigned_guid,assigned_sec_level FROM character_ticket WHERE (assigned_guid = %u OR assigned_sec_level = %i) AND closed = '0' ORDER BY ticket_id ASC " _OFFSET_, m_session->GetPlayer()->GetGUIDLow(), m_session->GetSecurity(), num-1);
+		else
+			result = CharacterDatabase.PQuery("SELECT guid,ticket_text,ticket_lastchange,assigned_guid,assigned_sec_level FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_, num-1);
 
         if (!result)
         {
@@ -2358,8 +2474,9 @@ bool ChatHandler::HandleTicketCommand(const char* args)
         uint32 guid = fields[0].GetUInt32();
         char const* text = fields[1].GetString();
         char const* time = fields[2].GetString();
-
-        ShowTicket(MAKE_NEW_GUID(guid, 0, HIGHGUID_PLAYER),text,time);
+		uint32 assignedGuid = fields[3].GetUInt32();
+		uint8 assignedSecLevel = fields[4].GetUInt8();
+        ShowTicket(MAKE_NEW_GUID(guid, 0, HIGHGUID_PLAYER),text,time,MAKE_NEW_GUID(assignedGuid,0,HIGHGUID_PLAYER) ,assignedSecLevel);
         delete result;
         return true;
     }
@@ -2375,7 +2492,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
 
     std::string time = TimeToTimestampStr(ticket->GetLastUpdate());
 
-    ShowTicket(target_guid, ticket->GetText(), time.c_str());
+    ShowTicket(target_guid, ticket->GetText(), time.c_str(), MAKE_NEW_GUID(ticket->GetAssignedGuid(),0,HIGHGUID_PLAYER) , ticket->GetAssignedSecLevel());
 
     return true;
 }
@@ -2395,12 +2512,31 @@ bool ChatHandler::HandleCloseTicketCommand(const char *args)
         return true;
     }
 
+	bool isAssigned = false;
+	if(strncmp(px,"a",2) == 0)
+	{
+		if(!m_session)
+        {
+            SendSysMessage(LANG_PLAYER_NOT_FOUND);
+            SetSentErrorMessage(true);
+            return false;
+        }
+		// use second arg
+		px = strtok(NULL, " ");
+		isAssigned = true;
+	}
+
     int num = (uint32)atoi(px);
 
     // close #num
     if (num > 0)
     {
-        QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_,num-1);
+		QueryResult* result = NULL;
+		if (isAssigned)
+			result = CharacterDatabase.PQuery("SELECT guid FROM character_ticket WHERE (assigned_guid = %u OR assigned_sec_level = %i) AND closed = '0' ORDER BY ticket_id ASC "_OFFSET_, m_session->GetPlayer()->GetGUIDLow(), m_session->GetSecurity(),num-1);
+		else
+			result = CharacterDatabase.PQuery("SELECT guid FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_,num-1);
+
         if (!result)
         {
             PSendSysMessage(LANG_COMMAND_TICKETNOTEXIST, num);
@@ -2416,7 +2552,7 @@ bool ChatHandler::HandleCloseTicketCommand(const char *args)
         //notify player
         if (Player* pl = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, guid)))
         {
-            pl->GetSession()->SendGMTicketGetTicket(0x0A, 0);
+            pl->GetSession()->SendGMTicketGetTicket(0x0A, 0, false);
             PSendSysMessage(LANG_COMMAND_TICKETPLAYERCLOSE, GetNameLink(pl).c_str());
         }
         else
@@ -2436,7 +2572,7 @@ bool ChatHandler::HandleCloseTicketCommand(const char *args)
 
     // notify players about ticket closing
     if (target)
-        target->GetSession()->SendGMTicketGetTicket(0x0A, 0);
+        target->GetSession()->SendGMTicketGetTicket(0x0A, 0, false);
 
     std::string nameLink = playerLink(target_name);
 

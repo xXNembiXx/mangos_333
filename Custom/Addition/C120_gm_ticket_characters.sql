@@ -1,0 +1,2 @@
+
+ALTER TABLE `character_ticket`     ADD COLUMN `assigned_guid` INT(11) UNSIGNED DEFAULT '0' NOT NULL AFTER `closed`,     ADD COLUMN `assigned_sec_level` TINYINT(3) DEFAULT '0' NOT NULL AFTER `assigned_guid`;

@@ -2344,7 +2344,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
     int num = atoi(px);
     if (num > 0)
     {
-        QueryResult *result = CharacterDatabase.PQuery("SELECT guid,ticket_text,ticket_lastchange FROM character_ticket ORDER BY ticket_id ASC "_OFFSET_, num-1);
+        QueryResult *result = CharacterDatabase.PQuery("SELECT guid,ticket_text,ticket_lastchange FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_, num-1);
 
         if (!result)
         {
@@ -2380,27 +2380,27 @@ bool ChatHandler::HandleTicketCommand(const char* args)
     return true;
 }
 
-//dell all tickets
-bool ChatHandler::HandleDelTicketCommand(const char *args)
+//close all tickets
+bool ChatHandler::HandleCloseTicketCommand(const char *args)
 {
     char* px = strtok((char*)args, " ");
     if (!px)
         return false;
 
-    // delticket all
+    // close all
     if (strncmp(px, "all", 4) == 0)
     {
-        sTicketMgr.DeleteAll();
-        SendSysMessage(LANG_COMMAND_ALLTICKETDELETED);
+        sTicketMgr.CloseAll();
+        SendSysMessage(LANG_COMMAND_ALLTICKETCLOSED);
         return true;
     }
 
     int num = (uint32)atoi(px);
 
-    // delticket #num
+    // close #num
     if (num > 0)
     {
-        QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM character_ticket ORDER BY ticket_id ASC "_OFFSET_,num-1);
+        QueryResult* result = CharacterDatabase.PQuery("SELECT guid FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_,num-1);
         if (!result)
         {
             PSendSysMessage(LANG_COMMAND_TICKETNOTEXIST, num);
@@ -2411,16 +2411,16 @@ bool ChatHandler::HandleDelTicketCommand(const char *args)
         uint32 guid = fields[0].GetUInt32();
         delete result;
 
-        sTicketMgr.Delete(guid);
+        sTicketMgr.Close(guid);
 
         //notify player
         if (Player* pl = sObjectMgr.GetPlayer(ObjectGuid(HIGHGUID_PLAYER, guid)))
         {
             pl->GetSession()->SendGMTicketGetTicket(0x0A, 0);
-            PSendSysMessage(LANG_COMMAND_TICKETPLAYERDEL, GetNameLink(pl).c_str());
+            PSendSysMessage(LANG_COMMAND_TICKETPLAYERCLOSE, GetNameLink(pl).c_str());
         }
         else
-            PSendSysMessage(LANG_COMMAND_TICKETDEL);
+            PSendSysMessage(LANG_COMMAND_TICKETCLOSE);
 
         return true;
     }
@@ -2431,16 +2431,16 @@ bool ChatHandler::HandleDelTicketCommand(const char *args)
     if (!extractPlayerTarget(px, &target, &target_guid, &target_name))
         return false;
 
-    // delticket $char_name
-    sTicketMgr.Delete(GUID_LOPART(target_guid));
+    // closeticket $char_name
+    sTicketMgr.Close(GUID_LOPART(target_guid));
 
-    // notify players about ticket deleting
+    // notify players about ticket closing
     if (target)
         target->GetSession()->SendGMTicketGetTicket(0x0A, 0);
 
     std::string nameLink = playerLink(target_name);
 
-    PSendSysMessage(LANG_COMMAND_TICKETPLAYERDEL,nameLink.c_str());
+    PSendSysMessage(LANG_COMMAND_TICKETPLAYERCLOSE,nameLink.c_str());
     return true;
 }
 

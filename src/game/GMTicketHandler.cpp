@@ -85,11 +85,11 @@ void WorldSession::HandleGMTicketUpdateTextOpcode( WorldPacket & recv_data )
         sLog.outError("Ticket update: Player %s (GUID: %u) doesn't have active ticket", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow());
 }
 
-void WorldSession::HandleGMTicketDeleteTicketOpcode( WorldPacket & /*recv_data*/ )
+void WorldSession::HandleGMTicketCloseTicketOpcode( WorldPacket & /*recv_data*/ )
 {
-    sTicketMgr.Delete(GetPlayer()->GetGUIDLow());
+    sTicketMgr.Close(GetPlayer()->GetGUIDLow());
 
-    WorldPacket data( SMSG_GMTICKET_DELETETICKET, 4 );
+    WorldPacket data( SMSG_GMTICKET_CLOSETICKET, 4 );
     data << uint32(9);
     SendPacket( &data );
 
@@ -122,7 +122,7 @@ void WorldSession::HandleGMTicketCreateOpcode( WorldPacket & recv_data )
     }
 
     if(isFollowup)
-        sTicketMgr.Delete(_player->GetGUIDLow());
+        sTicketMgr.Close(_player->GetGUIDLow());
 
     sTicketMgr.Create(_player->GetGUIDLow(), ticketText.c_str());
 
@@ -186,7 +186,7 @@ void WorldSession::HandleGMResponseResolve(WorldPacket & recv_data)
     // empty opcode
     DEBUG_LOG("WORLD: %s", LookupOpcodeName(recv_data.GetOpcode()));
 
-    sTicketMgr.Delete(GetPlayer()->GetGUIDLow());
+    sTicketMgr.Close(GetPlayer()->GetGUIDLow());
 
     WorldPacket data(SMSG_GMRESPONSE_STATUS_UPDATE, 1);
     data << uint8(0);                                       // ask to fill out gm survey = 1

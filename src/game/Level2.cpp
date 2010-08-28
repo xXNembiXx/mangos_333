@@ -2228,7 +2228,7 @@ bool ChatHandler::HandlePInfoCommand(const char* args)
 }
 
 //show tickets
-void ChatHandler::ShowTicket(uint64 guid, char const* text, char const* time, uint64 aGuid, uint8 aLevel)
+void ChatHandler::ShowTicket(uint64 ticketId, uint64 guid, char const* text, char const* time, uint64 aGuid, uint8 aLevel)
 {
     std::string name;
     if (!sObjectMgr.GetPlayerNameByGUID(guid, name))
@@ -2240,7 +2240,7 @@ void ChatHandler::ShowTicket(uint64 guid, char const* text, char const* time, ui
 	if(!sObjectMgr.GetPlayerNameByGUID(aGuid,assignedStr) && !aLevel)
         assignedStr = "no one";
 		
-    PSendSysMessage(LANG_COMMAND_TICKETVIEW, nameLink.c_str(),time,assignedStr.c_str(),aLevel,text);
+    PSendSysMessage(LANG_COMMAND_TICKETVIEW, ticketId,nameLink.c_str(),time,assignedStr.c_str(),aLevel,text);
 }
 
 //ticket commands
@@ -2389,15 +2389,16 @@ bool ChatHandler::HandleTicketCommand(const char* args)
             return false;
         }
 
-		// get playerpointer
-		Player* pl = sObjectMgr.GetPlayer(guid);
+        // get playerpointer
+        Player* pl = sObjectMgr.GetPlayer(guid);
 
-		// check if player is Gamemaster
-		if(!pl && !pl->isGameMaster())
-		{
-			SetSentErrorMessage(true);
-			return false;
-		}
+        // check if player is Gamemaster
+        if (!pl)
+            if (!pl->isGameMaster())
+            {
+                SetSentErrorMessage(true);
+                return false;
+            }
 
         GMTicket* ticket = sTicketMgr.GetGMTicket(GUID_LOPART(guid));
 
@@ -2458,9 +2459,9 @@ bool ChatHandler::HandleTicketCommand(const char* args)
     {
 		QueryResult *result = NULL;
 		if (isAssigned)
-			result = CharacterDatabase.PQuery("SELECT guid,ticket_text,ticket_lastchange,assigned_guid,assigned_sec_level FROM character_ticket WHERE (assigned_guid = %u OR assigned_sec_level = %i) AND closed = '0' ORDER BY ticket_id ASC " _OFFSET_, m_session->GetPlayer()->GetGUIDLow(), m_session->GetSecurity(), num-1);
+			result = CharacterDatabase.PQuery("SELECT ticket_id,guid,ticket_text,ticket_lastchange,assigned_guid,assigned_sec_level FROM character_ticket WHERE (assigned_guid = %u OR assigned_sec_level = %i) AND closed = '0' ORDER BY ticket_id ASC " _OFFSET_, m_session->GetPlayer()->GetGUIDLow(), m_session->GetSecurity(), num-1);
 		else
-			result = CharacterDatabase.PQuery("SELECT guid,ticket_text,ticket_lastchange,assigned_guid,assigned_sec_level FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_, num-1);
+			result = CharacterDatabase.PQuery("SELECT ticket_id,guid,ticket_text,ticket_lastchange,assigned_guid,assigned_sec_level FROM character_ticket WHERE closed = '0' ORDER BY ticket_id ASC "_OFFSET_, num-1);
 
         if (!result)
         {
@@ -2471,12 +2472,13 @@ bool ChatHandler::HandleTicketCommand(const char* args)
 
         Field* fields = result->Fetch();
 
-        uint32 guid = fields[0].GetUInt32();
-        char const* text = fields[1].GetString();
-        char const* time = fields[2].GetString();
-		uint32 assignedGuid = fields[3].GetUInt32();
-		uint8 assignedSecLevel = fields[4].GetUInt8();
-        ShowTicket(MAKE_NEW_GUID(guid, 0, HIGHGUID_PLAYER),text,time,MAKE_NEW_GUID(assignedGuid,0,HIGHGUID_PLAYER) ,assignedSecLevel);
+		uint32 ticketId = fields[0].GetUInt32();
+        uint32 guid = fields[1].GetUInt32();
+        char const* text = fields[2].GetString();
+        char const* time = fields[3].GetString();
+		uint32 assignedGuid = fields[4].GetUInt32();
+		uint8 assignedSecLevel = fields[5].GetUInt8();
+        ShowTicket(ticketId,MAKE_NEW_GUID(guid, 0, HIGHGUID_PLAYER),text,time,MAKE_NEW_GUID(assignedGuid,0,HIGHGUID_PLAYER),assignedSecLevel);
         delete result;
         return true;
     }
@@ -2492,7 +2494,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
 
     std::string time = TimeToTimestampStr(ticket->GetLastUpdate());
 
-    ShowTicket(target_guid, ticket->GetText(), time.c_str(), MAKE_NEW_GUID(ticket->GetAssignedGuid(),0,HIGHGUID_PLAYER) , ticket->GetAssignedSecLevel());
+    ShowTicket(ticket->GetTicketId(), target_guid, ticket->GetText(), time.c_str(), MAKE_NEW_GUID(ticket->GetAssignedGuid(),0,HIGHGUID_PLAYER) , ticket->GetAssignedSecLevel());
 
     return true;
 }

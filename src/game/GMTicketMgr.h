@@ -31,9 +31,14 @@ class GMTicket
         {
         }
 
-        GMTicket(uint32 guid, const std::string& text, const std::string& responsetext, time_t update, uint8 closed, uint32 assignedGuid, uint8 assignedSecLevel) : m_guid(guid), m_text(text), m_responseText(responsetext), m_lastUpdate(update), m_closed(closed), m_assignedGuid(assignedGuid), m_assignedSecLevel(assignedSecLevel)
+        GMTicket(uint32 ticketId, uint32 guid, const std::string& text, const std::string& responsetext, time_t update, uint8 closed, uint32 assignedGuid, uint8 assignedSecLevel) : m_ticketId(ticketId), m_guid(guid), m_text(text), m_responseText(responsetext), m_lastUpdate(update), m_closed(closed), m_assignedGuid(assignedGuid), m_assignedSecLevel(assignedSecLevel)
         {
 
+        }
+
+        const uint32 GetTicketId() const
+        {
+            return m_ticketId;
         }
 
         const char* GetText() const
@@ -115,6 +120,7 @@ class GMTicket
             CharacterDatabase.CommitTransaction();
         }
     private:
+		uint32 m_ticketId;
         uint32 m_guid;
         std::string m_text;
         std::string m_responseText;
@@ -168,7 +174,7 @@ class GMTicketMgr
 
         void Create(uint32 guid, const char* text)
         {
-            GMTicket t = GMTicket(guid, text, "", time(NULL), 0, NULL, NULL);
+            GMTicket t = GMTicket(NULL, guid, text, "", time(NULL), 0, NULL, NULL);
             t.SaveToDB();
             m_GMTicketMap[guid] = t;
         }

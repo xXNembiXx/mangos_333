@@ -102,7 +102,7 @@ class GMTicket
 
         void CloseInDB() const
         {
-            CharacterDatabase.PExecute("UPDATE character_ticket SET closed = '1' WHERE guid = '%u' LIMIT 1", m_guid);
+            CharacterDatabase.PExecute("UPDATE character_ticket SET closed = '1' WHERE (guid = '%u' AND closed = '0') LIMIT 1", m_guid);
         }
 
         void SaveToDB() const

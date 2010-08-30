@@ -433,7 +433,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     }
 
     /* handle special cases */
-    if (movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT) && !mover->GetVehicleGUID())
+    if (movementInfo.HasMovementFlag(MOVEFLAG_ONTRANSPORT))
     {
         // transports size limited
         // (also received at zeppelin/lift leave by some reason with t_* as absolute in continent coordinates, can be safely skipped)
@@ -488,17 +488,6 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
         if(plMover->GetBaseMap()->IsUnderWater(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z-7.0f))
         {
             plMover->m_anti_BeginFallZ=INVALID_HEIGHT;
-        }
-    }
-    if (movementInfo.HasMovementFlag(MOVEFLAG_SWIMMING))
-    {
-        if(mover->GetTypeId() == TYPEID_UNIT)
-        {
-            if(((Creature*)mover)->isVehicle() && !((Creature*)mover)->canSwim())
-            {
-                // NOTE : we should enter evade mode here, but...
-                ((Vehicle*)mover)->SetSpawnDuration(1);
-            }
         }
     }
 
@@ -707,12 +696,8 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     else                                                    // creature charmed
     {
         if(mover->IsInWorld())
-        {
             mover->GetMap()->CreatureRelocation((Creature*)mover, movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
-            if(((Creature*)mover)->isVehicle())
-                ((Vehicle*)mover)->RellocatePassengers(mover->GetMap());
-        }
-	}
+    }
 }
 
 void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
@@ -793,12 +778,6 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket &recv_data)
 
     ObjectGuid guid;
     recv_data >> guid;
-	
-    if(_player->m_mover_in_queve && _player->GetMover()->GetObjectGuid() == guid)
-    {
-        _player->m_mover = _player->m_mover_in_queve;
-        _player->m_mover_in_queve = NULL;
-    }
 
     if (Unit *pMover = ObjectAccessor::GetUnit(*GetPlayer(), guid))
         GetPlayer()->SetMover(pMover);
@@ -841,124 +820,18 @@ void WorldSession::HandleDismissControlledVehicle(WorldPacket &recv_data)
     recv_data >> guid.ReadAsPacked();
     recv_data >> mi;
 
-    uint64 vehicleGUID = _player->GetVehicleGUID();
+    uint64 vehicleGUID = _player->GetCharmGUID();
 
     if(!vehicleGUID)                                        // something wrong here...
         return;
 
     _player->m_movementInfo = mi;
 
-    if(Vehicle *vehicle = ObjectAccessor::GetVehicle(vehicleGUID))
+    // using charm guid, because we don't have vehicle guid...
+    if(Vehicle *vehicle = _player->GetMap()->GetVehicle(vehicleGUID))
     {
-        if(vehicle->GetVehicleFlags() & VF_DESPAWN_AT_LEAVE)
-            vehicle->Dismiss();
-        else
-            _player->ExitVehicle();
-    }
-}
-
-void WorldSession::HandleRequestVehicleExit(WorldPacket &recv_data)
-{
-    sLog.outDebug("WORLD: Recvd CMSG_REQUEST_VEHICLE_EXIT");
-    recv_data.hexlike();
-
-    uint64 vehicleGUID = _player->GetVehicleGUID();
-
-    if(!vehicleGUID)                                        // something wrong here...
-        return;
-
-    if(Vehicle *vehicle = ObjectAccessor::GetVehicle(vehicleGUID))
-    {
-        _player->ExitVehicle();
-    }
-}
-
-void WorldSession::HandleRequestVehicleSwitchSeat(WorldPacket &recv_data)
-{
-    sLog.outDebug("WORLD: Recvd CMSG_REQUEST_VEHICLE_SWITCH_SEAT");
-    recv_data.hexlike();
-
-    uint64 vehicleGUID = _player->GetVehicleGUID();
-
-    if(!vehicleGUID)                                        // something wrong here...
-        return;
-
-    if(Vehicle *vehicle = ObjectAccessor::GetVehicle(vehicleGUID))
-    {
-        ObjectGuid guid;
-        recv_data >> guid.ReadAsPacked();
-
-        int8 seatId = 0;
-        recv_data >> seatId;
-
-        if(!guid.IsEmpty())
-        {
-            if(vehicleGUID != guid.GetRawValue())
-            {
-                if(Vehicle *veh = ObjectAccessor::GetVehicle(guid.GetRawValue()))
-                {
-                    if(!_player->IsWithinDistInMap(veh, 10))
-                        return;
-
-                    if(Vehicle *v = veh->FindFreeSeat(&seatId, false))
-                    {
-                        vehicle->RemovePassenger(_player);
-                        _player->EnterVehicle(v, seatId, false);
-                    }
-                }
-                return;
-            }
-        }
-        if(Vehicle *v = vehicle->FindFreeSeat(&seatId, false))
-        {
-            vehicle->RemovePassenger(_player);
-            _player->EnterVehicle(v, seatId, false);
-        }
-    }
-}
-
-void WorldSession::HandleChangeSeatsOnControlledVehicle(WorldPacket &recv_data)
-{
-    sLog.outDebug("WORLD: Recvd CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE");
-    recv_data.hexlike();
-
-    uint64 vehicleGUID = _player->GetVehicleGUID();
-
-    if(!vehicleGUID)                                        // something wrong here...
-        return;
-
-    if(recv_data.GetOpcode() == CMSG_REQUEST_VEHICLE_PREV_SEAT)
-    {
-        _player->ChangeSeat(-1, false);
-        return;
-    }
-    else if(recv_data.GetOpcode() == CMSG_REQUEST_VEHICLE_NEXT_SEAT)
-    {
-        _player->ChangeSeat(-1, true);
-        return;
-    }
-
-    ObjectGuid guid, guid2;
-    recv_data >> guid.ReadAsPacked();
-
-    MovementInfo mi;
-    recv_data >> mi;
-    _player->m_movementInfo = mi;
-
-    recv_data >> guid2.ReadAsPacked(); //guid of vehicle or of vehicle in target seat
-
-    int8 seatId;
-    recv_data >> seatId;
-
-    if(guid.GetRawValue() == guid2.GetRawValue())
-        _player->ChangeSeat(seatId, false);
-    else if(Vehicle *vehicle = ObjectAccessor::GetVehicle(guid2.GetRawValue()))
-    {
-        if(vehicle->HasEmptySeat(seatId))
-        {
-            _player->ExitVehicle();
-            _player->EnterVehicle(vehicle, seatId);
-        }
+        // Aura::HandleAuraControlVehicle will call Player::ExitVehicle
+        vehicle->RemoveSpellsCausingAura(SPELL_AURA_CONTROL_VEHICLE);
     }
 }
 

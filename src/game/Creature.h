@@ -116,6 +116,7 @@ struct CreatureInfo
     int32   resistance6;
     uint32  spells[CREATURE_MAX_SPELLS];
     uint32  PetSpellDataId;
+	uint32  VehicleEntry;
     uint32  mingold;
     uint32  maxgold;
     char const* AIName;
@@ -213,6 +214,15 @@ struct CreatureDataAddonAura
     SpellEffectIndex effect_idx;
 };
 
+struct CreatureDataAddonPassengers
+{
+    CreatureDataAddonPassengers() : entry(0), guid(0), seat_idx(-1) {}
+
+    uint32 entry;
+    uint32 guid;
+    int8 seat_idx;
+};
+
 // from `creature_addon` table
 struct CreatureDataAddon
 {
@@ -221,7 +231,9 @@ struct CreatureDataAddon
     uint32 bytes1;
     uint32 bytes2;
     uint32 emote;
-    uint32 splineFlags;
+	uint32 splineFlags;
+    uint32 vehicle_id;
+    CreatureDataAddonPassengers const* passengers;          // loaded as char* "entry1 seatid1 entry2 seatid2 ... "
     CreatureDataAddonAura const* auras;                     // loaded as char* "spell1 eff1 spell2 eff2 ... "
 };
 
@@ -571,6 +583,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
 
         MovementGeneratorType GetDefaultMovementType() const { return m_defaultMovementType; }
         void SetDefaultMovementType(MovementGeneratorType mgt) { m_defaultMovementType = mgt; }
+		float GetBaseSpeed() const;
 
         // for use only in LoadHelper, Map::Add Map::CreatureCellRelocation
         Cell const& GetCurrentCell() const { return m_currentCell; }

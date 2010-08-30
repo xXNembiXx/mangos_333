@@ -74,6 +74,7 @@ class Unit;
 class Map;
 class UpdateMask;
 class InstanceData;
+class Vehicle;
 class ZoneScript;
 
 typedef UNORDERED_MAP<Player*, UpdateData> UpdateDataMapType;
@@ -512,6 +513,8 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         bool isActiveObject() const { return m_isActiveObject || m_viewPoint.hasViewers(); }
 
         ViewPoint& GetViewPoint() { return m_viewPoint; }
+
+        Vehicle* SummonVehicle(uint32 id, float x, float y, float z, float ang, uint32 vehicleId = NULL);
 		
 		Creature* GetClosestCreatureWithEntry(WorldObject* pSource, uint32 uiEntry, float fMaxSearchRange);
         GameObject* GetClosestGameObjectWithEntry(WorldObject* pSource, uint32 uiEntry, float fMaxSearchRange);

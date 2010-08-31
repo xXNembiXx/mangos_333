@@ -13349,11 +13349,6 @@ void Player::OnGossipSelect(WorldObject* pSource, uint32 gossipListId, uint32 me
 
     GossipMenuItem const&  menu_item = gossipmenu.GetItem(gossipListId);
 
-    // if menu_item or gossipListId has no value return, maybe exploit..
-	// got some strange crashes because of that
-    if (&menu_item == NULL || !gossipListId)
-        return;
-
     uint32 gossipOptionId = menu_item.m_gOptionId;
     uint64 guid = pSource->GetGUID();
     uint32 moneyTake = menu_item.m_gBoxMoney;

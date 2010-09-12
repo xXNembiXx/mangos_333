@@ -6110,6 +6110,67 @@ bool ChatHandler::HandleInstanceUnbindCommand(const char* args)
     return true;
 }
 
+bool ChatHandler::HandleInstanceSetDataCommand(const char * args)
+{
+    Player* pl = m_session->GetPlayer();
+
+
+    Map* map = pl->GetMap();
+    if (!map->IsDungeon())
+    {
+        PSendSysMessage("Map is not a dungeon.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if (!((InstanceMap*)map)->GetInstanceData())
+    {
+        PSendSysMessage("Map has no instance data.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    char* field_str = strtok ((char*) args, " ");
+    char* value_str = strtok (NULL, "");
+
+    if (!field_str || !value_str)
+        return false;
+
+    int32 field = atoi (field_str);
+    int32 value = atoi (value_str);
+
+    ((InstanceMap*)map)->GetInstanceData()->SetData(field, value);
+    PSendSysMessage("Instance data field %i is now set to %i.", field, value);
+    return true;
+}
+
+bool ChatHandler::HandleInstanceGetDataCommand(const char * args)
+{
+    Player* pl = m_session->GetPlayer();
+
+
+    Map* map = pl->GetMap();
+    if (!map->IsDungeon())
+    {
+        PSendSysMessage("Map is not a dungeon.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if (!((InstanceMap*)map)->GetInstanceData())
+    {
+        PSendSysMessage("Map has no instance data.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    int32 field = atoi (args);
+
+    int32 val = ((InstanceMap*)map)->GetInstanceData()->GetData(field);
+    PSendSysMessage("Instance data for field %i is %i.", field, val);
+    return true;
+}
+
 bool ChatHandler::HandleInstanceStatsCommand(const char* /*args*/)
 {
     PSendSysMessage("instances loaded: %d", sMapMgr.GetNumInstances());

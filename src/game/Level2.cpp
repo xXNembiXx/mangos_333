@@ -2430,7 +2430,7 @@ bool ChatHandler::HandleTicketCommand(const char* args)
         Player* pl = sObjectMgr.GetPlayer(guid);
 
         // check if player is Gamemaster
-        if (!pl)
+        if (pl)
             if (!pl->isGameMaster())
             {
                 SetSentErrorMessage(true);

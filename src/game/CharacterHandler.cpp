@@ -1283,7 +1283,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 				Field *fields2 = result2->Fetch();
 				uint32 achiev_alliance = fields2[0].GetUInt32();
 				uint32 achiev_horde = fields2[1].GetUInt32();
-				CharacterDatabase.PExecute("UPDATE `character_achievement` set achievement = '%u' where achievement = '%u' AND guid = '%u'",
+				CharacterDatabase.PExecute("UPDATE IGNORE `character_achievement` set achievement = '%u' where achievement = '%u' AND guid = '%u'",
 					team == BG_TEAM_ALLIANCE ? achiev_alliance : achiev_horde, team == BG_TEAM_ALLIANCE ? achiev_horde : achiev_alliance, GUID_LOPART(guid));
 			}
 			while( result2->NextRow() );
@@ -1297,10 +1297,10 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 				Field *fields2 = result2->Fetch();
 				uint32 item_alliance = fields2[0].GetUInt32();
 				uint32 item_horde = fields2[1].GetUInt32();
-				CharacterDatabase.PExecute("UPDATE `character_inventory` set item = '%u' where item = '%u' AND guid = '%u'",
+				CharacterDatabase.PExecute("UPDATE IGNORE `character_inventory` set item = '%u' where item = '%u' AND guid = '%u'",
 					team == BG_TEAM_ALLIANCE ? item_alliance : item_horde, team == BG_TEAM_ALLIANCE ? item_horde : item_alliance, guid);
 
-				CharacterDatabase.PExecute("UPDATE `item_instance` SET `data`=CONCAT(CAST(SUBSTRING_INDEX(`data`, ' ', 3) AS CHAR), ' ', '%u', ' ',    CAST(SUBSTRING_INDEX(`data`, ' ', (3-64))AS CHAR)) WHERE CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(`data`, ' ', 4), ' ', '-1') AS UNSIGNED) = '%u' AND owner_guid = '%u'",
+				CharacterDatabase.PExecute("UPDATE IGNORE `item_instance` SET `data`=CONCAT(CAST(SUBSTRING_INDEX(`data`, ' ', 3) AS CHAR), ' ', '%u', ' ',    CAST(SUBSTRING_INDEX(`data`, ' ', (3-64))AS CHAR)) WHERE CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(`data`, ' ', 4), ' ', '-1') AS UNSIGNED) = '%u' AND owner_guid = '%u'",
 						team == BG_TEAM_ALLIANCE ? item_alliance : item_horde, team == BG_TEAM_ALLIANCE ? item_horde : item_alliance, GUID_LOPART(guid));
 			}
 			while( result2->NextRow() );
@@ -1314,7 +1314,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 				Field *fields2 = result2->Fetch();
 				uint32 spell_alliance = fields2[0].GetUInt32();
 				uint32 spell_horde = fields2[1].GetUInt32();
-				CharacterDatabase.PExecute("UPDATE `character_spell` set spell = '%u' where spell = '%u' AND guid = '%u'",
+				CharacterDatabase.PExecute("UPDATE IGNORE `character_spell` set spell = '%u' where spell = '%u' AND guid = '%u'",
 					team == BG_TEAM_ALLIANCE ? spell_alliance : spell_horde, team == BG_TEAM_ALLIANCE ? spell_horde : spell_alliance, GUID_LOPART(guid));
 			}
 			while( result2->NextRow() );
@@ -1329,7 +1329,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 				uint32 reputation_alliance = fields2[0].GetUInt32();
 				uint32 reputation_horde = fields2[1].GetUInt32();
 
-				CharacterDatabase.PExecute("UPDATE `character_reputation` set faction = '%u' where faction = '%u' AND guid = '%u'",
+				CharacterDatabase.PExecute("UPDATE IGNORE `character_reputation` set faction = '%u' where faction = '%u' AND guid = '%u'",
 					team == BG_TEAM_ALLIANCE ? reputation_alliance : reputation_horde, team == BG_TEAM_ALLIANCE ? reputation_horde : reputation_alliance, GUID_LOPART(guid));
 			}
 			while( result2->NextRow() );

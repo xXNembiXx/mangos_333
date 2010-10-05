@@ -170,6 +170,7 @@ bool ChatHandler::HandleReloadAllSpellCommand(const char*)
     HandleReloadSpellScriptTargetCommand("a");
     HandleReloadSpellTargetPositionCommand("a");
     HandleReloadSpellThreatsCommand("a");
+	HandleReloadSpellThreatMultiplicatorsCommand("a");
     HandleReloadSpellPetAurasCommand("a");
     HandleReloadSpellDisabledCommand("a");
     return true;
@@ -618,6 +619,14 @@ bool ChatHandler::HandleReloadSpellThreatsCommand(const char*)
     sSpellMgr.LoadSpellThreats();
     SendGlobalSysMessage("DB table `spell_threat` (spell aggro definitions) reloaded.");
     return true;
+}
+
+bool ChatHandler::HandleReloadSpellThreatMultiplicatorsCommand(const char*)
+{
+   sLog.outString( "Re-Loading spell threat multiplicator definitions..." );
+   sSpellMgr.LoadSpellThreatMultiplicators();
+   SendGlobalSysMessage("DB table `spell_threat_multiplicator` (spell threat multiplicator definitions) reloaded.");
+   return true;
 }
 
 bool ChatHandler::HandleReloadSpellPetAurasCommand(const char*)

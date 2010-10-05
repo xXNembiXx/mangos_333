@@ -1636,6 +1636,52 @@ void SpellMgr::LoadSpellThreats()
     sLog.outString( ">> Loaded %u aggro generating spells", count );
 }
 
+void SpellMgr::LoadSpellThreatMultiplicators()
+{
+       mSpellThreatMultiplicatorMap.clear();
+
+       uint32 count = 0;
+
+       QueryResult* result = WorldDatabase.Query("SELECT entry, threat_multiplicator FROM spell_threat_multiplicator");
+       if(!result)
+       {
+               barGoLink bar(1);
+
+               bar.step();
+
+               sLog.outString();
+               sLog.outString(">> Loaded %u aggro multiplicating spells", count);
+               return;
+       }
+
+       barGoLink bar((int)result->GetRowCount());
+
+       do
+       {
+               Field *fields = result->Fetch();
+
+               bar.step();
+
+               uint32 entry = fields[0].GetUInt32();
+               float threat_multiplicator = fields[1].GetFloat();
+
+               if(!sSpellStore.LookupEntry(entry))
+               {
+                       sLog.outErrorDb("Spell %u listed in `spell_threat_multiplier` does not exist", entry);
+                       continue;
+               }
+
+               mSpellThreatMultiplicatorMap[entry] = threat_multiplicator;
+
+               ++count;
+       } while (result->NextRow());
+
+       delete result;
+
+       sLog.outString();
+       sLog.outString(">> Loaded %u aggro multiplicating spells", count);
+}
+
 bool SpellMgr::IsRankSpellDueToSpell(SpellEntry const *spellInfo_1,uint32 spellId_2) const
 {
     SpellEntry const *spellInfo_2 = sSpellStore.LookupEntry(spellId_2);

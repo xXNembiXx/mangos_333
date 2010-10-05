@@ -49,6 +49,9 @@ float ThreatCalcHelper::calcThreat(Unit* pHatedUnit, Unit* /*pHatingUnit*/, floa
     }
 
     float threat = pHatedUnit->ApplyTotalThreatModifier(pThreat, schoolMask);
+
+	threat *= 100;
+
     return threat;
 }
 

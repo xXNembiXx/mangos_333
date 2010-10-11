@@ -1191,6 +1191,11 @@ bool Aura::_RemoveAura()
         uint32 removeFamilyFlag2 = m_spellProto->SpellFamilyFlags2;
         switch(m_spellProto->SpellFamilyName)
         {
+			case SPELLFAMILY_GENERIC:
+				//FIXME: ResetThreatRedirection for spell 59665, because there is no dummy aura for remove...
+				if (m_spellProto->Id == 50720)
+					m_target->getHostileRefManager().ResetThreatRedirection();
+				break;
             case SPELLFAMILY_PALADIN:
                 if (IsSealSpell(m_spellProto))
                     removeState = AURA_STATE_JUDGEMENT;     // Update Seals information
@@ -2667,6 +2672,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
 
                 return;
             }
+			case 35079:                                     // Misdirection, triggered buff
+            case 59628:                                     // Tricks of the Trade, triggered buff
+            case 59665:                                     // Vigilance, redirection spell
+            {
+                if (Unit* pCaster = GetCaster())
+                    pCaster->getHostileRefManager().ResetThreatRedirection();
+                return;
+            }
             case 36730:                                     // Flame Strike
             {
                 target->CastSpell(target, 36731, true, NULL, this);
@@ -3124,8 +3137,60 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             }
             break;
         }
-        case SPELLFAMILY_HUNTER:
+		case SPELLFAMILY_ROGUE:
+		{
+			switch(GetId())
+			{
+				case 57934:                                 // Tricks of the Trade, main spell
+				{
+					if (apply)
+					{
+						SetAuraCharges(1);
+					}
+					else
+					{
+						// proc event charges
+						if (m_removeMode == AURA_REMOVE_BY_DEFAULT)
+						{
+							if(Unit *pCaster = GetCaster())
+								pCaster->CastSpell(target, 59628, false); // dummy aura for reset 6 seconds after attack
+							else
+								target->getHostileRefManager().ResetThreatRedirection();
+						}
+						else
+							target->getHostileRefManager().ResetThreatRedirection(); // used for spell proc event charges expire
+					}
+					return;
+				}
+			}
+			break;
+		}
+		case SPELLFAMILY_HUNTER:
+		{
+			switch(GetId())
+            {
+                case 34477:                                 // Misdirection, main spell
+                {
+                    if (apply)
+                        SetAuraCharges(1);
+                    else
+                    {
+                        // used for spell proc event
+                        if (m_removeMode == AURA_REMOVE_BY_DEFAULT)
+						{
+							if(Unit *pCaster = GetCaster())
+								pCaster->CastSpell(target, 35079, false); // dummy aura for reset 6 seconds after attack
+							else
+								target->getHostileRefManager().ResetThreatRedirection();
+						}
+						else
+							target->getHostileRefManager().ResetThreatRedirection();
+                    }
+                    return;
+                }
+            }
             break;
+		}
         case SPELLFAMILY_PALADIN:
             switch(GetId())
             {

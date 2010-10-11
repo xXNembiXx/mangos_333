@@ -34,10 +34,11 @@ HostileRefManager::~HostileRefManager()
 
 void HostileRefManager::threatAssist(Unit *pVictim, float pThreat, SpellEntry const *pThreatSpell, bool pSingleTarget)
 {
-    HostileReference* ref;
+	float redirectedMod = pVictim->getHostileRefManager().GetThreatRedirectionMod();
+    Unit* redirectedTarget = redirectedMod ? pVictim->getHostileRefManager().GetThreatRedirectionTarget() : NULL;
 
     uint32 size = pSingleTarget ? 1 : getSize();            // if pSingleTarget do not devide threat
-    ref = getFirst();
+    HostileReference* ref = getFirst();
     while(ref != NULL)
     {
         float threat = ThreatCalcHelper::calcThreat(pVictim, iOwner, pThreat, false, (pThreatSpell ? GetSpellSchoolMask(pThreatSpell) : SPELL_SCHOOL_MASK_NORMAL), pThreatSpell);
@@ -160,6 +161,31 @@ void HostileRefManager::setOnlineOfflineState(Unit *pCreature,bool pIsOnline)
         }
         ref = nextRef;
     }
+}
+
+Unit* HostileRefManager::GetThreatRedirectionTarget() const
+{
+	Unit* pTemp = NULL;
+
+	if(!m_redirectionTargetGuid.IsEmpty())
+	{
+		switch(m_redirectionTargetGuid.GetHigh())
+		{
+			case HIGHGUID_PLAYER:
+			{
+				Player* pTempPlayer = ObjectAccessor::FindPlayer(m_redirectionTargetGuid);
+				if(pTempPlayer && pTempPlayer->GetMap() == iOwner->GetMap() ? pTempPlayer : NULL)
+				{
+					pTemp = (Unit*)pTempPlayer;
+				}
+				break;
+			}
+			case HIGHGUID_UNIT:     pTemp = (Unit*)iOwner->GetMap()->GetCreature(m_redirectionTargetGuid); break;
+			case HIGHGUID_VEHICLE:  pTemp = (Unit*)iOwner->GetMap()->GetVehicle(m_redirectionTargetGuid); break;
+			case HIGHGUID_PET:		pTemp = (Unit*)iOwner->GetMap()->GetPet(m_redirectionTargetGuid); break;
+		}
+	}
+	return pTemp;
 }
 
 //=================================================

@@ -33,6 +33,9 @@ class HostileRefManager : public RefManager<Unit, ThreatManager>
 {
     private:
         Unit *iOwner;
+
+		float      m_redirectionMod;
+        ObjectGuid m_redirectionTargetGuid;
     public:
         explicit HostileRefManager(Unit *pOwner) { iOwner = pOwner; }
         ~HostileRefManager();
@@ -64,6 +67,23 @@ class HostileRefManager : public RefManager<Unit, ThreatManager>
 
         // delete one reference, defined by Unit
         void deleteReference(Unit *pCreature);
+
+		// redirection threat data
+        void SetThreatRedirection(ObjectGuid guid, uint32 pct)
+        {
+            m_redirectionTargetGuid = guid;
+            m_redirectionMod = pct/100.0f;
+        }
+
+        void ResetThreatRedirection()
+        {
+            m_redirectionTargetGuid.Clear();
+            m_redirectionMod = 0.0f;
+        }
+
+        float GetThreatRedirectionMod() const { return m_redirectionMod; }
+        Unit*  GetThreatRedirectionTarget() const;
+        // owner of manager variable, back ref. to it, always exist
 };
 //=================================================
 #endif

@@ -183,7 +183,10 @@ class MANGOS_DLL_SPEC ThreatManager
 
         void addThreat(Unit* pVictim, float threat, bool crit, SpellSchoolMask schoolMask, SpellEntry const *threatSpell);
         void addThreat(Unit* pVictim, float threat) { addThreat(pVictim,threat,false,SPELL_SCHOOL_MASK_NONE,NULL); }
-        void modifyThreatPercent(Unit *pVictim, int32 pPercent);
+        
+		void addThreatDirectly(Unit* pVictim, float threat);
+		
+		void modifyThreatPercent(Unit *pVictim, int32 pPercent);
 
         float getThreat(Unit *pVictim, bool pAlsoSearchOfflineList = false);
 
